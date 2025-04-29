@@ -11,5 +11,5 @@ features:
   details: Discover advanced topics like extending data models, creating custom attributes, and contributing to UnoPim’s core functionality.
 - title: Plugin Creation
   details: Learn how to creating and integrating third-party plugins in UnoPim extending platform capabilities
-footer: Copyright © 2024 UnoPim
+footer: Copyright © 2025 UnoPim
 ---
