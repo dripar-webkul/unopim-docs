@@ -67,7 +67,7 @@ class Exporter extends AbstractExporter
         // This function will prepare data and write it to the provided $filePath.
         //
         // You can gather data from the database, apply filters, and organize the export here.
-        
+
         return true;  // Return true if the batch export is successful.
     }
 
@@ -140,7 +140,7 @@ return [
                             'label' => 'XLSX',
                         ],
                     ],
-                ], 
+                ],
                 [
                     'name'     => 'with_media',
                     'title'    => 'With Media',

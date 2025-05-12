@@ -41,17 +41,18 @@
       <OutboundLink />
     </a>
 
-    <div 
-      class="nav-item" 
+    <div
+      class="nav-item"
       v-if="$route.path.split('/')[1] !== ''"
     >
-      <select 
-        v-model="version" 
+      <select
+        v-model="version"
         @change="changeVersion"
       >
         <option value="master">Master</option>
-                
+
         <option value="0.1">0.1</option>
+        <option value="0.2">0.2</option>
       </select>
     </div>
   </nav>
@@ -75,9 +76,10 @@ export default {
       version: '0.1',
     };
   },
-  
+
   mounted() {
     let currentPath = this.$route.path.split('/');
+     console.log(currentPath);
 
     this.version = currentPath[1] || '0.1';
   },
@@ -206,6 +208,6 @@ export default {
     &:hover, &.router-link-active
       margin-bottom -2px
       border-bottom 2px solid lighten($accentColor, 8%)
-p 
+p
   color $h1Color
 </style>

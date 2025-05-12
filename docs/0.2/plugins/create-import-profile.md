@@ -57,7 +57,7 @@ use Webkul\DataTransfer\Helpers\Importers\AbstractImporter;
 class Importer extends AbstractImporter
 {
     protected array $validColumnNames = [
-        'identifier', 'is_zip_range', 'zip_code',
+        'identifier', 'is_zip_range', 'zip_code', 
         'zip_from', 'zip_to', 'state', 'country', 'tax_rate',
     ];
 
@@ -146,11 +146,11 @@ class Importer extends AbstractImporter
     - This method validates each row of data to ensure it meets specific criteria (e.g., required fields, valid data types).
     - If the action is delete, it checks if the identifier exists in the system before deleting.
     - Uses Laravel's `Validator` to enforce field rules such as required values, valid numeric ranges, etc.
-
+  
 2. **`importBatch()`**:
     - This method processes the batch of data, either inserting new data, updating existing data, or deleting based on the action.
     - Handles the creation, updating, and deletion of records and generates a summary of what was processed.
-
+  
 3. **`isIdentifierExist()`**:
     - This helper function checks if a specific identifier exists in the system, which is important for actions like deletion.
 

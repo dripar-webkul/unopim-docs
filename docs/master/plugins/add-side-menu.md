@@ -59,6 +59,34 @@ In your plugin's `routes.php` file, define the named route used in `menu.php` as
 ```php
 Route::get('/example', [ExampleController::class, 'index'])->name('example.menu.index');
 ```
+### 4. **Merge Configuration**
+
+After defining your menu items and routes, you need to merge your menu configuration with UnoPim's core menu configuration. Add the following to your plugin's service provider:
+
+```php
+<?php
+
+namespace Webkul\Example\Providers;
+
+use Illuminate\Support\ServiceProvider;
+
+class ExampleServiceProvider extends ServiceProvider
+{
+    /**
+     * Register services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->mergeConfigFrom(
+            dirname(__DIR__) . '/Config/menu.php', 'menu.admin'
+        );
+    }
+}
+```
+
+This step is crucial as it integrates your custom menu items into UnoPim's admin panel menu structure.
 
 ## Loading and Setting the Side Menu Icon
 
@@ -78,15 +106,15 @@ UnoPim allows developers to add custom icons to their side menu items. Icons can
 - In your plugin's `app.css` or another custom CSS file, define the font and the class for your custom icon:
 
 ```css
-@font-face { 
-  font-family: "unopim-admin"; 
-  src: url("../fonts/example.woff") format("woff"); 
-  font-weight: normal; 
-  font-style: normal; 
-  font-display: block; 
+@font-face {
+  font-family: "unopim-admin";
+  src: url("../fonts/example.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
 }
 
-.icon-example:before { 
+.icon-example:before {
   content: "\e900"; /* Custom Unicode for the icon */
 }
 ```

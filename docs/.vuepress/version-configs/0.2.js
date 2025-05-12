@@ -1,5 +1,5 @@
 /* set version */
-let version = 'master';
+let version = '0.2';
 
 /* version prefix setter */
 function setVersionPrefix(children) {
@@ -13,8 +13,7 @@ function setVersionPrefix(children) {
 }
 
 /* module export */
-module.exports = [
-    {
+module.exports = [{
         title: 'Prologue',
         path: setVersionPrefix('prologue'),
         collapsable: true,
@@ -78,7 +77,6 @@ module.exports = [
             ['plugins/create-export-profile', 'Export Profile'],
             ['plugins/create-import-profile', 'Import Profile'],
             ['plugins/plugin-deployment', 'Plugin Deployment'],
-            ['plugins/queue-management', 'Queue Management'],
         ])
     },
     {
