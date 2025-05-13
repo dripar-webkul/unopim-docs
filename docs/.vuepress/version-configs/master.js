@@ -78,7 +78,6 @@ module.exports = [
             ['plugins/create-export-profile', 'Export Profile'],
             ['plugins/create-import-profile', 'Import Profile'],
             ['plugins/plugin-deployment', 'Plugin Deployment'],
-            ['plugins/queue-management', 'Queue Management'],
         ])
     },
     {
@@ -91,6 +90,7 @@ module.exports = [
             ['advanced/override-core-model', 'Override Core Models'],
             ['advanced/render-event', 'View Render Event'],
             ['advanced/security-practice', 'Best Security Practices'],
+            ['advanced/queue-management', 'Queue Management'],
         ])
     },
     {

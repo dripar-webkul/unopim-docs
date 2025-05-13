@@ -57,7 +57,7 @@ use Webkul\DataTransfer\Helpers\Importers\AbstractImporter;
 class Importer extends AbstractImporter
 {
     protected array $validColumnNames = [
-        'identifier', 'is_zip_range', 'zip_code', 
+        'identifier', 'is_zip_range', 'zip_code',
         'zip_from', 'zip_to', 'state', 'country', 'tax_rate',
     ];
 
@@ -146,11 +146,11 @@ class Importer extends AbstractImporter
     - This method validates each row of data to ensure it meets specific criteria (e.g., required fields, valid data types).
     - If the action is delete, it checks if the identifier exists in the system before deleting.
     - Uses Laravel's `Validator` to enforce field rules such as required values, valid numeric ranges, etc.
-  
+
 2. **`importBatch()`**:
     - This method processes the batch of data, either inserting new data, updating existing data, or deleting based on the action.
     - Handles the creation, updating, and deletion of records and generates a summary of what was processed.
-  
+
 3. **`isIdentifierExist()`**:
     - This helper function checks if a specific identifier exists in the system, which is important for actions like deletion.
 
@@ -206,3 +206,42 @@ public function register()
 ```
 
 This ensures that the `importer.php` configuration is merged into the system, allowing UnoPim to recognize the importer.
+
+
+## Step 4: Queue Operations
+
+After setting up your importer, you need to configure and manage the queue system for processing imports. This is crucial for handling background tasks efficiently.
+
+### Managing Queue Workers
+
+When you make changes to any Importer class or its configurations, follow these steps:
+
+```bash
+# Restart the queue worker
+php artisan queue:restart
+
+# Start the queue worker again
+php artisan queue:work
+```
+
+### Running Specific Import Jobs
+
+To run a specific import job for a particular user:
+
+```bash
+# Format: php artisan unopim:queue:work [import_id] [user_email]
+php artisan unopim:queue:work 1 johndoe@example.com
+```
+
+Parameters explained:
+- `1`: The ID of the import job you want to process
+- `johndoe@example.com`: The email of the logged-in user who initiated the import
+
+::: warning Important
+Always restart the queue workers after:
+- Modifying Importer classes
+- Updating configurations
+- Installing or updating modules
+
+This ensures your changes take effect in the queue system.
+:::

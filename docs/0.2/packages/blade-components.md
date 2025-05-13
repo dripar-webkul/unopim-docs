@@ -33,8 +33,8 @@ Let's assume you want to use the **`accordion`** component, you can call it like
 
 ```html
 <!-- Accordion -->
-<x-admin::accordion 
-    title="Accordion" 
+<x-admin::accordion
+    title="Accordion"
     class="px-5"
 >
     <x-slot:header class="bg-gray-200">
@@ -240,7 +240,7 @@ Let's assume you want to use the **`drawer`** component. You can call it like th
 
 ```html
 <!-- Drawer -->
-<x-admin::drawer     
+<x-admin::drawer
     position="left"
     width="100%"
 >
@@ -279,7 +279,7 @@ Let's assume you want to use the **`dropdown`** component. You can call it like 
 
 ```html
 <!-- Dropdown -->
-<x-admin::dropdown position="bottom-left"> 
+<x-admin::dropdown position="bottom-left">
     <x-slot:toggle>
         Dropdown Toggle
     </x-slot>
@@ -310,7 +310,7 @@ It can be configured with various props to customize its behavior according to a
 | **`value`**   | `String`         | None          | Initial value of the date picker.                                        |
 | **`allow-input`** | `Boolean`      | `true`      | Determines whether manual input is allowed in the input field.           |
 | **`disable`** | `Array`          | `[]`          | Array of dates to disable in the date picker.                            |
-                                                                                                                              
+
 Let's assume you want to use the **`flat-picker`** component. You can call it like this.
 
 ```html
@@ -340,7 +340,7 @@ Let's assume you want to use the **`datagrid`** component. You can call it like 
 <x-admin::datagrid :src="route('admin.catalog.products.index')" />
 ```
 
-### Tabs 
+### Tabs
 
 The Tabs component allows users to navigate between different content sections using tabs. It consists of two main parts: the `tabs` component for managing the tabs and the `tab-item` component for defining individual tab items.
 
@@ -356,7 +356,7 @@ The `tinymce` component wraps the Tinymce editor and provides additional functio
 | -------------- | ------- | ------------- | ---------------------------------------------------------------- |
 | **`selector`** | String  | `''`          | The CSS selector for the textarea element to initialize as TinyMCE. |
 | **`field`**    | Object  | `{}`          | Vue Formulate field object.                                      |
-| **`prompt`**   | String  | `''`          | The prompt to be used for AI content generation.                 |  
+| **`prompt`**   | String  | `''`          | The prompt to be used for AI content generation.                 |
 
 Let's assume you want to use the **`tinymce`** component on admin and shop. You can call it like this.
 
@@ -388,7 +388,7 @@ Let's assume you want to use the **`shimmer`** You can call it like this.
 
 ### Quantity Changer
 
-The Quantity Changer component, provides a simple interface for users to increase or decrease a quantity value. 
+The Quantity Changer component, provides a simple interface for users to increase or decrease a quantity value.
 
 | Props          | Type    | Default Value | Description                       |
 | -------------- | ------- | ------------- | --------------------------------- |
@@ -540,7 +540,7 @@ Let's assume you want to use the **`tree`** component, You can call it like this
 ```
 
 ### Media(Image/Video)
- 
+
 The Media component in UnoPim provides a user interface for managing and displaying images/videos, allowing users to upload, edit, and delete images.:
 
 | Props               | Type        | Default Value | Description                                                      |
@@ -571,3 +571,124 @@ Let's assume you want to use the **`Image/Video`** component, You can call it li
     :uploaded-videos="$product->videos"
 />
 ```
+
+
+### Async Select Controls
+
+The `async select` component provides dynamic loading of attributes with pagination and search functionality.
+
+#### Route Configuration
+
+First, define the `routes` for `async` options:
+
+```php
+Route::get('options/async', [AjaxOptionsController::class, 'getOptions'])
+    ->name('admin.example.options.async');
+```
+
+
+#### Controller Implementation
+
+```php
+<?php
+
+namespace Webkul\Example\Http\Controllers;
+
+use Illuminate\Http\JsonResponse;
+use Illuminate\Routing\Controller;
+use Webkul\Attribute\Repositories\AttributeRepository;
+
+class AjaxOptionsController extends Controller
+{
+    const DEFAULT_PER_PAGE = 20;
+
+    public function __construct(
+        protected AttributeRepository $attributeRepository
+    ) {}
+
+    public function getOptions(): JsonResponse
+    {
+        $entityName = request()->get('entityName');
+        $page = request()->get('page');
+        $query = request()->get('query', '');
+
+        $repository = $this->attributeRepository;
+
+        if (! empty($entityName)) {
+            $entityName = json_decode($entityName);
+            $repository = in_array('number', $entityName)
+                ? $repository->whereIn('validation', $entityName)
+                : $repository->whereIn('type', $entityName);
+        }
+
+        if (! empty($query)) {
+            $repository = $repository->where('code', 'LIKE', '%' . $query . '%');
+        }
+
+        $attributes = $repository->orderBy('id')
+            ->paginate(self::DEFAULT_PER_PAGE);
+
+        $options = collect($attributes->items())->map(function ($attribute) {
+            $translatedLabel = $attribute->translate(
+                core()->getRequestedLocaleCode()
+            )?->name;
+
+            return [
+                'id'    => $attribute->id,
+                'code'  => $attribute->code,
+                'label' => ! empty($translatedLabel)
+                    ? $translatedLabel
+                    : "[{$attribute->code}]",
+            ];
+        });
+
+        return new JsonResponse([
+            'options'  => $options,
+            'page'     => $attributes->currentPage(),
+            'lastPage' => $attributes->lastPage(),
+        ]);
+    }
+}
+```
+#### Component Usage
+
+```html
+<x-admin::form.control-group>
+    <x-admin::form.control-group.label>
+        @lang('admin::app.catalog.attributes.index.title')
+        <span>*</span>
+    </x-admin::form.control-group.label>
+
+    <x-admin::form.control-group.control
+        type="select"
+        name="attributes"
+        rules="required"
+        :label="trans('admin::app.catalog.attributes.index.title')"
+        track-by="id"
+        label-by="label"
+        :list-route="route('admin.example.options.async')"
+        async
+    />
+
+    <x-admin::form.control-group.error
+        control-name="attributes"
+    />
+</x-admin::form.control-group>
+```
+
+#### Features
+
+1. **Attribute Filtering**:
+   - Filter by entity type using `entityName`
+   - Support for validation types (e.g., 'number')
+   - Custom attribute type filtering
+
+2. **Search & Pagination**:
+   - Server-side search on attribute code
+   - Default page size of 20 items
+   - Ordered by ID for consistency
+
+3. **Translation Support**:
+   - Automatic label translation
+   - Fallback to attribute code
+   - Current locale detection

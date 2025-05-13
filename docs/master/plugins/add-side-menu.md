@@ -129,13 +129,13 @@ UnoPim allows developers to add custom icons to their side menu items. Icons can
 ```
 
 #### Step 5: **Load the CSS in the Service Provider**
-- Use the `unopim.admin.layout.head` event in your `ExampleServiceProvider` to load the custom CSS in the main admin layout:
+- Use the `unopim.admin.layout.head.before` event in your `ExampleServiceProvider` to load the custom CSS in the main admin layout:
 
 ```php
 public function boot()
 {
     $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'example');
-    Event::listen('unopim.admin.layout.head', function($viewRenderEventManager) {
+    Event::listen('unopim.admin.layout.head.before', function($viewRenderEventManager) {
         $viewRenderEventManager->addTemplate('example::style');
     });
 }
@@ -177,13 +177,13 @@ public function boot()
 ```
 
 #### Step 4: **Load the CSS in the Service Provider**
-- Use the same method as above to load the CSS via the `unopim.admin.layout.head` event in your `ExampleServiceProvider`:
+- Use the same method as above to load the CSS via the `unopim.admin.layout.head.before` event in your `ExampleServiceProvider`:
 
 ```php
 public function boot()
 {
     $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'example');
-    Event::listen('unopim.admin.layout.head', function($viewRenderEventManager) {
+    Event::listen('unopim.admin.layout.head.before', function($viewRenderEventManager) {
         $viewRenderEventManager->addTemplate('example::style');
     });
 }

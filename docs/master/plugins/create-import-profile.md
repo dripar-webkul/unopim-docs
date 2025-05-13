@@ -246,4 +246,215 @@ Always restart the queue workers after:
 This ensures your changes take effect in the queue system.
 :::
 
+# Job Validators and Filters for Import
+
+This guide explains how to implement job validators and filters for import operations in UnoPim.
+
+## Job Validators
+
+Job validators ensure that import configurations and data meet required specifications before processing.
+
+### Creating a Base Job Validator
+
+First, create a base validator class that other validators can extend:
+
+```php
+<?php
+
+namespace Webkul\Example\Validators\JobInstances\Default;
+
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
+
+class JobValidator implements JobValidatorContract
+{
+    /**
+     * Base validation rules
+     */
+    protected array $rules = [];
+
+    /**
+     * Custom error messages
+     */
+    protected array $messages = [];
+
+    /**
+     * Custom attribute names
+     */
+    protected array $attributeNames = [];
+
+    /**
+     * Validate the job data
+     */
+    public function validate(array $data, array $options = []): void
+    {
+        $data = $this->preValidationProcess($data);
+
+        $validator = Validator::make(
+            $data,
+            $this->getRules($options),
+            $this->getMessages($options),
+            $this->getAttributeNames($options)
+        );
+
+        if ($validator->fails()) {
+            throw ValidationException::withMessages(
+                $this->processErrorMessages($validator)
+            );
+        }
+    }
+}
+```
+
+### Creating a Specific Import Validator
+
+Create validators for specific import types by extending the base validator:
+
+```php
+<?php
+namespace Webkul\Example\Validators\JobInstances\Import;
+
+use Webkul\Example\Validators\JobInstances\Default\JobValidator;
+
+class ProductImportValidator extends JobValidator
+{
+    protected array $rules = [
+        'file' => [
+            'required',
+            'mimes:csv,xlsx',
+        ],
+        'batch_size' => 'required|integer|min:1',
+        'field_separator' => 'required|in:,,;,tab',
+        'validation_strategy' => 'required|in:stop-on-errors,skip-errors',
+        'allowed_errors' => 'required|integer|min:0'
+    ];
+
+    protected array $attributeNames = [
+        'file' => 'Import File',
+        'batch_size' => 'Batch Size',
+        'field_separator' => 'Field Separator',
+        'validation_strategy' => 'Validation Strategy',
+        'allowed_errors' => 'Allowed Errors'
+    ];
+
+    public function getMessages(array $options): array
+    {
+        return [
+            'file.required' => 'Please select a file to import',
+            'file.mimes' => 'File must be a CSV or Excel document'
+        ];
+    }
+}
+```
+
+## Import Data Filters
+
+Filters help clean and transform import data before processing.
+
+### Creating a Data Filter
+
+```php
+// filepath: /packages/Webkul/Example/src/Filters/ImportDataFilter.php
+namespace Webkul\Example\Filters;
+
+class ImportDataFilter
+{
+    /**
+     * Filter and transform import data
+     */
+    public function filter(array $data): array
+    {
+        return array_map(function ($row) {
+            return [
+                'id' => trim($row['id'] ?? ''),
+                'name' => ucfirst(strtolower($row['name'] ?? '')),
+                'sku' => strtoupper($row['sku'] ?? ''),
+                'status' => $this->normalizeStatus($row['status'] ?? ''),
+                'price' => (float) ($row['price'] ?? 0),
+                'created_at' => now()->toDateTimeString()
+            ];
+        }, $data);
+    }
+
+    /**
+     * Normalize status values
+     */
+    private function normalizeStatus(string $status): string
+    {
+        return in_array(strtolower($status), ['active', 'inactive'])
+            ? strtolower($status)
+            : 'inactive';
+    }
+}
+```
+
+### Usage Example
+
+Here's how to use validators and filters in your import process:
+
+```php
+<?php
+
+namespace Webkul\Example\Helpers;
+
+use Webkul\Example\Validators\JobInstances\Import\ProductImportValidator;
+use Webkul\Example\Filters\ImportDataFilter;
+
+class ImportManager
+{
+    public function __construct(
+        private ProductImportValidator $validator,
+        private ImportDataFilter $filter
+    ) {}
+
+    public function processImport(array $config, array $data): bool
+    {
+        $this->validator->validate($config);
+
+        $filteredData = $this->filter->filter($data);
+
+        return $this->processFilteredData($filteredData);
+    }
+}
+```
+
+### Register in Service Provider
+
+```php
+public function register()
+{
+    $this->app->bind(ProductImportValidator::class);
+    $this->app->bind(ImportDataFilter::class);
+}
+```
+
+## Key Features
+
+1. **Validation Rules**:
+   - File type restrictions
+   - Required fields
+   - Data type validation
+   - Custom validation rules
+
+2. **Data Filtering**:
+   - Data cleaning
+   - Value normalization
+   - Type casting
+   - Default value handling
+
+3. **Error Handling**:
+   - Detailed error messages
+   - Custom attribute names
+   - Batch error collection
+
+## Best Practices
+
+1. Always validate import configurations before processing
+2. Use filters to clean and normalize data
+3. Implement proper error handling
+4. Create specific validators for different import types
+5. Add logging for debugging
+6. Write unit tests for validators and filters
+
+This structure ensures data quality and consistency in your import operations while maintaining clean, maintainable code.
 

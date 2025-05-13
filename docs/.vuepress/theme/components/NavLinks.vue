@@ -79,7 +79,6 @@ export default {
 
   mounted() {
     let currentPath = this.$route.path.split('/');
-     console.log(currentPath);
 
     this.version = currentPath[1] || '0.1';
   },
