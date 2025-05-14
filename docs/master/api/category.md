@@ -4,7 +4,7 @@
 
 ## Get All Categories
 
-**Endpoint:**  
+**Endpoint:**
 ```
 GET {{url}}/api/v1/rest/categories
 ```
@@ -18,14 +18,14 @@ GET {{url}}/api/v1/rest/categories
 
 #### Usage Examples
 
-- **Filters:**  
+- **Filters:**
   Retrieve categories that have a specific parent category.
 
   ```http
   GET {{url}}/api/v1/rest/categories?filters={"parent":[{"operator":"=","value": "master"}]}
   ```
 
-- **Page:**  
+- **Page:**
   Retrieve a specific page of categories.
 
   ```http
@@ -74,7 +74,7 @@ The API will return a list of categories in a JSON format.
 
 ## Get Category by Category Code
 
-**Endpoint:**  
+**Endpoint:**
 ```
 GET {{url}}/api/v1/rest/categories/{category_code}
 ```
@@ -115,7 +115,7 @@ The response will contain details of the requested category.
 
 ## Create a Category
 
-**Endpoint:**  
+**Endpoint:**
 ```
 POST {{url}}/api/v1/rest/categories
 ```
@@ -183,7 +183,7 @@ Upon successful creation, the API will return a success message.
 
 ## Update a Category
 
-**Endpoint:**  
+**Endpoint:**
 ```
 PUT {{url}}/api/v1/rest/categories/{category_code}
 ```
@@ -207,7 +207,7 @@ To update a category, provide the category code, parent category, and any additi
 
 ```json
 {
-  "code": "electronic3",
+  "code": "electronic",
   "parent": "electronic2",
   "additional_data": {
       "common": {
@@ -252,6 +252,100 @@ Upon successful update, the API will return a success message indicating the cat
 {
   "success": true,
   "message": "Category Updated Successfully"
+}
+```
+:::
+
+## Patch a Category
+
+**Endpoint:**
+```
+PATCH {{url}}/api/v1/rest/categories/{category_code}
+```
+
+### Headers
+
+| Key           | Value                 |
+|---------------|-----------------------|
+| Accept        | application/json      |
+| Authorization | Bearer `access_token` |
+
+### Path Parameter
+
+| Name           | Description                    | Type   |
+|----------------|--------------------------------|--------|
+| `category_code`| The unique code of the category| String |
+
+Example:
+```
+PATCH {{url}}/api/v1/rest/categories/electronic
+```
+
+### Payload
+Only include the fields that need to be updated:
+
+```json
+{
+    "additional_data": {
+        "common": {
+            "description": "Updated Electronic Category Description",
+            "image": "category/new-image.jpg"
+        },
+        "locale_specific": {
+            "en_US": {
+                "name": "Updated Electronic Name"
+            }
+        }
+    }
+}
+```
+
+### Response
+
+::: details Response
+```json
+{
+    "success": true,
+    "message": "Category updated successfully."
+}
+```
+:::
+
+---
+
+## Delete a Category
+
+**Endpoint:**
+```
+DELETE {{url}}/api/v1/rest/categories/{category_code}
+```
+
+### Headers
+
+| Key           | Value                 |
+|---------------|-----------------------|
+| Accept        | application/json      |
+| Authorization | Bearer `access_token` |
+
+### Path Parameter
+
+| Name           | Description                    | Type   |
+|----------------|--------------------------------|--------|
+| `category_code`| The unique code of the category| String |
+
+Example:
+```
+DELETE {{url}}/api/v1/rest/categories/electronic
+```
+
+### Response
+
+::: details Response
+```json
+{
+    "success": true,
+    "message": "Category deleted successfully",
+    "code": "electronic"
 }
 ```
 :::

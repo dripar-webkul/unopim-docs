@@ -20,7 +20,7 @@ UnoPim’s dynamic UI is powered by [Vue.js](https://vuejs.org/), a flexible Jav
 - **Reactive Components**: Vue.js allows for real-time updates as data changes.
 - **Component-Based Architecture**: Vue.js promotes reusable and maintainable components.
 
-UnoPim uses [Vite](https://vitejs.dev/) as a build tool, offering a faster development experience than the previous [Laravel Mix](https://laravel.com/docs/10.x/mix). The `vite.config.js` file defines the build paths, and Vite compiles CSS and JavaScript into the public directory.
+UnoPim uses [Vite](https://vitejs.dev/) as a build tool, offering a faster development experience. The `vite.config.js` file defines the build paths, and Vite compiles CSS and JavaScript into the public directory.
 
 ## Blade
 

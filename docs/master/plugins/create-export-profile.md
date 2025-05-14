@@ -213,3 +213,216 @@ Always restart the queue workers after:
 
 This ensures your changes take effect in the queue system.
 :::
+
+## Job Validators and Filters for Export
+
+This guide explains how to implement `job validators and filters` for export operations in UnoPim.
+
+### Job Validators
+
+Job validators ensure that export configurations meet required specifications before processing.
+
+#### Creating an Export Validator
+
+Create validators for specific export types by extending the base validator:
+
+```php
+<?php
+
+namespace Webkul\Example\Validators\JobInstances\Export;
+
+use Webkul\DataTransfer\Validators\JobInstances\Default\JobValidator;
+
+class ProductExportValidator extends JobValidator
+{
+    /**
+     * Validation rules for export data
+     */
+    protected array $rules = [
+        'filters.file_format' => 'required|in:Csv,Xls,Xlsx',
+        'filters.with_media'  => 'in:1,0',
+        'filters.locale'      => 'required',
+        'filters.channel'     => 'required'
+    ];
+
+    /**
+     * Custom attribute names for error messages
+     */
+    protected array $attributeNames = [
+        'filters.file_format' => 'File Format',
+        'filters.with_media'  => 'With Media',
+        'filters.locale'      => 'Locale',
+        'filters.channel'     => 'Channel'
+    ];
+
+    /**
+     * Custom error messages
+     */
+    public function getMessages(array $options): array
+    {
+        return [
+            'filters.file_format.required' => 'Please select a file format',
+            'filters.file_format.in' => 'Invalid file format selected'
+        ];
+    }
+}
+```
+
+### Filters for Export
+
+Before implementing filters, ensure you have completed the `Register the Exporter` process.
+
+#### Filter Configuration
+
+Add the filters configuration in your `exporter.php`:
+
+```php
+<?php
+
+return [
+    'products' => [
+        'title'    => 'data_transfer::app.exporters.products.title',
+        'exporter' => 'Webkul\Example\Helpers\Exporters\Product\Exporter',
+        'source'   => 'Webkul\Product\Repositories\ProductRepository',
+
+        'filters' => [
+            'fields' => [
+                [
+                    'name'       => 'file_format',
+                    'title'      => 'data_transfer::app.exporters.fields.file-format',
+                    'type'       => 'select',
+                    'required'   => true,
+                    'validation' => 'required',
+                    'options'    => [
+                        [
+                            'value' => 'Csv',
+                            'label' => 'CSV',
+                        ],
+                        [
+                            'value' => 'Xlsx',
+                            'label' => 'XLSX',
+                        ]
+                    ]
+                ],
+                [
+                    'name'       => 'channel',
+                    'title'      => 'data_transfer::app.exporters.fields.channel',
+                    'type'       => 'select',
+                    'required'   => true,
+                    'validation' => 'required',
+                    'async'      => true,
+                    'track_by'   => 'id',
+                    'label_by'   => 'label',
+                    'list_route' => 'admin.channels.fetch-all' // Route to fetch channels
+                ],
+
+            ]
+        ]
+    ]
+];
+```
+
+#### Filter Field Properties
+
+| Property | Type | Description | Example |
+|----------|------|-------------|----------|
+| **`name`** | String | Unique identifier for the filter | `'file_format'` |
+| **`title`** | String | Display label for the filter | `'app.exporters.fields.file-format'` |
+| **`type`** | String | Input type (`select`, `boolean`) | `'select'` |
+| **`required`** | Boolean | Whether the field is mandatory | `true` |
+| **`validation`** | String | Laravel validation rules | `'required'` |
+| **`options`** | Array | Static options for select fields | `[['value' => 'Csv', 'label' => 'CSV']]` |
+| **`async`** | Boolean | Enable async loading of options | `true` |
+| **`track_by`** | String | Field to use as option value | `'id'` |
+| **`label_by`** | String | Field to display in the select | `'label'` |
+| **`list_route`** | String | Route for fetching options | `'admin.channels.fetch-all'` |
+
+#### Available Filter Types
+
+1. **Select Filter**:
+   - Single selection from options
+   - Can be static (options array) or dynamic (async)
+   - Example: file format, channel selection
+
+2. **Boolean Filter**:
+   - Simple true/false selection
+   - Example: export with media files
+
+####  Implementing Async Options
+To implement async options for the filter, you need to create a route and a controller method that returns the options in JSON format.
+
+1. **Route Definition**:
+
+```php
+Route::get('channel/fetch-all', [OptionController::class, 'listChannel'])
+    ->name('admin.channels.fetch-all');
+```
+
+2. **Controller for Async Options**:
+
+```php
+<?php
+
+namespace Webkul\ReadXml\Http\Controllers;
+
+use Illuminate\Http\JsonResponse;
+use Webkul\Core\Repositories\ChannelRepository;
+
+class OptionController extends Controller
+{
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+     public function __construct(
+        protected ChannelRepository $channelRepository,
+      ) {}
+
+    /**
+     * Return All Channels
+     */
+    public function listChannel(): JsonResponse
+    {
+        $queryParams = request()->except(['page', 'query', 'entityName', 'attributeId']);
+        $searchIdentifiers = isset($queryParams['identifiers']['columnName']) ? $queryParams['identifiers'] : [];
+        $searchQuery = request()->get('query');
+        $channelRepository = $this->channelRepository;
+
+        if (! empty($searchIdentifiers)) {
+            $values = $searchIdentifiers['values'] ?? [];
+
+            $channelRepository = $channelRepository->whereIn(
+                'code',
+                is_array($values) ? $values : [$values]
+            );
+        }
+        if (! empty($searchQuery)) {
+            $channelRepository = $channelRepository->whereTranslationLike('name', '%'.$searchQuery.'%')
+                ->orWhere('code', $searchQuery);
+        }
+
+        $allActivateChannel = $channelRepository->get()->toArray();
+
+        $allChannel = [];
+
+        foreach ($allActivateChannel as $channel) {
+            $allChannel[] = [
+                'id'    => $channel['code'],
+                'label' => $channel['name'] ?? $channel['code'],
+            ];
+        }
+
+        return new JsonResponse([
+            'options' => $allChannel,
+        ]);
+    }
+}
+````
+
+::: tip Important Notes
+- Export filters appear automatically in Data Transfer > Exports > Create Export
+- The data-transfer module handles all UI rendering
+- Filter configurations define both the UI and validation rules
+- Boolean filters are rendered as toggles/checkboxes
+:::

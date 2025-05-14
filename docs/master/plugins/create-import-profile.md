@@ -246,26 +246,36 @@ Always restart the queue workers after:
 This ensures your changes take effect in the queue system.
 :::
 
-# Job Validators and Filters for Import
+## Job Validators and Filters for Import
 
-This guide explains how to implement job validators and filters for import operations in UnoPim.
+This guide explains how to implement `job validators and filters` for import operations in UnoPim.
 
-## Job Validators
+### Job Validators
 
 Job validators ensure that import configurations and data meet required specifications before processing.
 
-### Creating a Base Job Validator
+#### Understand a Base Job Validator
 
-First, create a base validator class that other validators can extend:
+First, Read a base validator class that other validators can extend:
 
 ```php
 <?php
 
-namespace Webkul\Example\Validators\JobInstances\Default;
+namespace Webkul\DataTransfer\Validators\JobInstances\Default;
 
+use Illuminate\Contracts\Validation\Validator as ValidatorContract;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Webkul\DataTransfer\Contracts\Validator\JobInstances\JobValidator as JobValidatorContract;
 
+/**
+ * Class JobValidator
+ *
+ * This class is responsible for validating job instance data
+ * according to specified rules, custom messages, and attribute names.
+ *
+ * Can be extended to implement custom validate function while using the other helper functions of this class
+ */
 class JobValidator implements JobValidatorContract
 {
     /**
@@ -306,15 +316,16 @@ class JobValidator implements JobValidatorContract
 }
 ```
 
-### Creating a Specific Import Validator
+#### Creating a Specific Import Validator
 
 Create validators for specific import types by extending the base validator:
 
 ```php
 <?php
+
 namespace Webkul\Example\Validators\JobInstances\Import;
 
-use Webkul\Example\Validators\JobInstances\Default\JobValidator;
+use Webkul\DataTransfer\Validators\JobInstances\Default\JobValidator;
 
 class ProductImportValidator extends JobValidator
 {
@@ -347,114 +358,147 @@ class ProductImportValidator extends JobValidator
 }
 ```
 
-## Import Data Filters
+### Filters for Import
 
-Filters help clean and transform import data before processing.
+Before implementing filters, ensure you have completed the `Register the Importer` process.
 
-### Creating a Data Filter
+Filters are used to customize and control the import process by providing additional configuration options and validation rules. These filters will automatically appear in the UnoPim admin panel under Data Transfer > Imports > Create Import.
 
-```php
-// filepath: /packages/Webkul/Example/src/Filters/ImportDataFilter.php
-namespace Webkul\Example\Filters;
 
-class ImportDataFilter
-{
-    /**
-     * Filter and transform import data
-     */
-    public function filter(array $data): array
-    {
-        return array_map(function ($row) {
-            return [
-                'id' => trim($row['id'] ?? ''),
-                'name' => ucfirst(strtolower($row['name'] ?? '')),
-                'sku' => strtoupper($row['sku'] ?? ''),
-                'status' => $this->normalizeStatus($row['status'] ?? ''),
-                'price' => (float) ($row['price'] ?? 0),
-                'created_at' => now()->toDateTimeString()
-            ];
-        }, $data);
-    }
+| Property | Type | Description | Example |
+|----------|------|-------------|----------|
+| **`name`** | String | Unique identifier for the filter field | `'template'` |
+| **`title`** | String | Display label for the filter field | `'app.importers.products.fields.template'` |
+| **`required`** | Boolean | Whether the field is mandatory | `true` |
+| **`type`** | String | Input type (`select`, `multiselect`) | `'select'` |
+| **`validation`** | String | Laravel validation rules | `'required'` |
+| **`async`** | Boolean | Enable async loading of options | `true` |
+| **`track_by`** | String | Field to use as option value | `'id'` |
+| **`label_by`** | String | Field to display in the select | `'label'` |
+| **`list_route`** | String | Route for fetching options | `'admin.templates.fetch-all'` |
 
-    /**
-     * Normalize status values
-     */
-    private function normalizeStatus(string $status): string
-    {
-        return in_array(strtolower($status), ['active', 'inactive'])
-            ? strtolower($status)
-            : 'inactive';
-    }
-}
-```
 
-### Usage Example
+#### Filter Configuration
 
-Here's how to use validators and filters in your import process:
+Add the filters configuration in your `importer.php`:
 
 ```php
 <?php
 
-namespace Webkul\Example\Helpers;
+return [
+    'products' => [
+        'title'       => 'data_transfer::app.importers.products.title',  // Display title for the importer
+        'importer'    => 'Webkul\Example\Helpers\Importers\Product\Importer',  // Importer class
+        'sample_path' => 'data-transfer/samples/products.csv',  // Path to a sample CSV file for users
 
-use Webkul\Example\Validators\JobInstances\Import\ProductImportValidator;
-use Webkul\Example\Filters\ImportDataFilter;
+        'filters' => [
+            'fields' => [
+                [
+                    'name'       => 'channel',
+                    'title'      => 'data_transfer::app.importers.products.fields.channel',
+                    'type'       => 'select',
+                    'required'   => true,
+                    'validation' => 'required',
+                    'async'      => true,
+                    'track_by'   => 'id',
+                    'label_by'   => 'label',
+                    'list_route' => 'admin.channels.fetch-all', // Route for fetching options
+                ],
+                // Add more filter fields as needed
+            ],
+        ],
+    ],
+];
+```
 
-class ImportManager
+#### Available Filter Types
+
+1. **Select Filter**:
+   - Single selection from options
+   - Supports async loading
+   - Example use: selecting channel, locale, currency etc.
+
+2. **Multiselect Filter**:
+   - Multiple selections allowed
+   - Supports async loading
+   - Example use: selecting multiple attributes, categories, currencies etc.
+
+####  Implementing Async Options
+To implement async options for the filter, you need to create a route and a controller method that returns the options in JSON format.
+
+
+1. **Route Definition**:
+
+```php
+Route::get('channel/fetch-all', [OptionController::class, 'listChannel'])
+    ->name('admin.channels.fetch-all');
+```
+
+2. **Controller for Async Options**:
+
+```php
+<?php
+
+namespace Webkul\ReadXml\Http\Controllers;
+
+use Illuminate\Http\JsonResponse;
+use Webkul\Core\Repositories\ChannelRepository;
+
+class OptionController extends Controller
 {
-    public function __construct(
-        private ProductImportValidator $validator,
-        private ImportDataFilter $filter
-    ) {}
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+     public function __construct(
+        protected ChannelRepository $channelRepository,
+      ) {}
 
-    public function processImport(array $config, array $data): bool
+    /**
+     * Return All Channels
+     */
+    public function listChannel(): JsonResponse
     {
-        $this->validator->validate($config);
+        $queryParams = request()->except(['page', 'query', 'entityName', 'attributeId']);
+        $searchIdentifiers = isset($queryParams['identifiers']['columnName']) ? $queryParams['identifiers'] : [];
+        $searchQuery = request()->get('query');
+        $channelRepository = $this->channelRepository;
 
-        $filteredData = $this->filter->filter($data);
+        if (! empty($searchIdentifiers)) {
+            $values = $searchIdentifiers['values'] ?? [];
 
-        return $this->processFilteredData($filteredData);
+            $channelRepository = $channelRepository->whereIn(
+                'code',
+                is_array($values) ? $values : [$values]
+            );
+        }
+        if (! empty($searchQuery)) {
+            $channelRepository = $channelRepository->whereTranslationLike('name', '%'.$searchQuery.'%')
+                ->orWhere('code', $searchQuery);
+        }
+
+        $allActivateChannel = $channelRepository->get()->toArray();
+
+        $allChannel = [];
+
+        foreach ($allActivateChannel as $channel) {
+            $allChannel[] = [
+                'id'    => $channel['code'],
+                'label' => $channel['name'] ?? $channel['code'],
+            ];
+        }
+
+        return new JsonResponse([
+            'options' => $allChannel,
+        ]);
     }
 }
 ```
 
-### Register in Service Provider
-
-```php
-public function register()
-{
-    $this->app->bind(ProductImportValidator::class);
-    $this->app->bind(ImportDataFilter::class);
-}
-```
-
-## Key Features
-
-1. **Validation Rules**:
-   - File type restrictions
-   - Required fields
-   - Data type validation
-   - Custom validation rules
-
-2. **Data Filtering**:
-   - Data cleaning
-   - Value normalization
-   - Type casting
-   - Default value handling
-
-3. **Error Handling**:
-   - Detailed error messages
-   - Custom attribute names
-   - Batch error collection
-
-## Best Practices
-
-1. Always validate import configurations before processing
-2. Use filters to clean and normalize data
-3. Implement proper error handling
-4. Create specific validators for different import types
-5. Add logging for debugging
-6. Write unit tests for validators and filters
-
-This structure ensures data quality and consistency in your import operations while maintaining clean, maintainable code.
-
+::: tip Important Notes
+- Filter fields will automatically appear in the Data Transfer > Imports > Create Import page.
+- No additional Blade implementation is required
+- The data-transfer module handles all UI rendering
+- Filter configurations define both the UI and validation rules
+:::
