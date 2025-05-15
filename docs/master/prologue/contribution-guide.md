@@ -16,8 +16,13 @@ It is our collective goal to foster collaboration and find effective solutions t
 
 You can contribute to the following projects:
 
-- UnoPim
-- UnoPim docs
+- [UnoPim](https://github.com/unopim/unopim)
+- [UnoPim docs](https://github.com/unopim/unopim-docs)
+- [Bagisto REST API](https://github.com/unopim/bagisto-rest-api)
+- [UnoPim-Bagisto Connector](https://github.com/unopim/bagisto-connector)
+- [UnoPim Shopify Connector](https://github.com/unopim/shopify-connector)
+- [UnoPim Digital Asset Management (DAM)](https://github.com/unopim/unopim-digital-asset-management)
+
 
 ## Feature Requests
 
@@ -27,9 +32,9 @@ We welcome proposals for new features and enhancements to the existing UnoPim ap
 
 Before submitting a pull request, it's important to consider the following points to help you choose the appropriate branch:
 
-- **Bug Fixes**: If you're fixing a bug, make sure to port the fix to the master version. 
-- **Critical Bug Fixes**: If you're fixing a critical bug, make sure to port the fix to the latest stable version that supports it (currently v0.1.2).
-- **Feature Requests**: If your request involves a feature with potential breaking changes, send it to the master branch, which corresponds to the upcoming release (v0.1.x).
+- **Bug Fixes**: If you're fixing a bug, make sure to port the fix to the master version.
+- **Critical Bug Fixes**: If you're fixing a critical bug, make sure to port the fix to the latest stable version that supports it (currently v0.2.0).
+- **Feature Requests**: If your request involves a feature with potential breaking changes, send it to the master branch, which corresponds to the upcoming release (v0.2.x).
 
 ## Compiled Assets
 
@@ -39,7 +44,7 @@ To determine the sorting order for Tailwind CSS classes, consult the official Ta
 
 When making changes to blade files that utilize Tailwind CSS classes, it's essential to maintain consistency and organization. Tailwind CSS classes should be ordered according to a predefined structure to enhance readability and maintain a clean codebase.
 
-To determine how Tailwind CSS classes should be sorted, refer to the official Tailwind CSS documentation for guidelines on class ordering. 
+To determine how Tailwind CSS classes should be sorted, refer to the official Tailwind CSS documentation for guidelines on class ordering.
 
 [Class Reordering](https://tailwindcss.com/blog/automatic-class-sorting-with-prettier#how-classes-are-sorted)
 

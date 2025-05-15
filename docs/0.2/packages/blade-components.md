@@ -213,6 +213,224 @@ Let's assume you want to use the **`Multi Select`** component. You can call it l
 </x-admin::form.control-group>
 ```
 
+### Async Select
+
+The `async select` component provides dynamic loading of attributes with pagination and search functionality.
+
+
+| Props           | Type      | Default | Description                                                   |
+|----------------|-----------|---------|---------------------------------------------------------------|
+| **`async`**    | `Boolean` | `false` | Enables async loading of options                              |
+| **`track-by`** | `String`  | `'code'`  | Field to use as option value                                 |
+| **`label-by`** | `String`  | `'label'`| Field to display in the select                              |
+| **`list-route`**| `String` | `null`  | Route for fetching options data                              |
+| **`entityName`**| `Json`   | `null`  | Filter options by entity type or validation                   |
+| **`value`**    | `Mixed`   | `null`  | Pre-selected value for the select control                    |
+
+
+
+#### Route Configuration
+
+First, define the `routes` for `async` options:
+
+```php
+Route::get('options/async', [AjaxOptionsController::class, 'getOptions'])
+    ->name('admin.example.options.async');
+```
+
+
+#### Controller Implementation
+
+```php
+<?php
+
+namespace Webkul\Example\Http\Controllers;
+
+use Illuminate\Http\JsonResponse;
+use Illuminate\Routing\Controller;
+use Webkul\Attribute\Repositories\AttributeRepository;
+
+class AjaxOptionsController extends Controller
+{
+    /**
+     * Default number of items per page.
+     */
+    const DEFAULT_PER_PAGE = 20;
+
+    public function __construct(
+        protected AttributeRepository $attributeRepository
+    ) {}
+
+    /**
+     * Get options for the select control.
+     *
+     * @return JsonResponse
+     */
+    public function getOptions(): JsonResponse
+    {
+        $entityName = request()->get('entityName');
+        $page = request()->get('page');
+        $query = request()->get('query', '');
+
+        $repository = $this->attributeRepository;
+
+        if (! empty($entityName)) {
+            $entityName = json_decode($entityName);
+            $repository = in_array('number', $entityName)
+                ? $repository->whereIn('validation', $entityName)
+                : $repository->whereIn('type', $entityName);
+        }
+
+        if (! empty($query)) {
+            $repository = $repository->where('code', 'LIKE', '%' . $query . '%');
+        }
+
+        $attributes = $repository->orderBy('id')
+            ->paginate(self::DEFAULT_PER_PAGE);
+
+        $options = collect($attributes->items())->map(function ($attribute) {
+            $translatedLabel = $attribute->translate(
+                core()->getRequestedLocaleCode()
+            )?->name;
+
+            return [
+                'id'    => $attribute->id,
+                'code'  => $attribute->code,
+                'label' => ! empty($translatedLabel)
+                    ? $translatedLabel
+                    : "[{$attribute->code}]",
+            ];
+        });
+
+        return new JsonResponse([
+            'options'  => $options,
+            'page'     => $attributes->currentPage(),
+            'lastPage' => $attributes->lastPage(),
+        ]);
+    }
+}
+```
+
+#### Component Usage
+Example with all available props:
+
+```html
+<x-admin::form.control-group>
+    <x-admin::form.control-group.label>
+        @lang('admin::app.catalog.attributes.index.title')
+        <span>*</span>
+    </x-admin::form.control-group.label>
+
+    <x-admin::form.control-group.control
+        type="select"
+        name="attributes"
+        rules="required"
+        :value="$value"
+        :label="trans('admin::app.catalog.attributes.index.title')"
+        track-by="id"
+        label-by="label"
+        :entityName="json_encode(['text'])"
+        :list-route="route('admin.example.options.async')"
+        async=true
+    />
+
+    <x-admin::form.control-group.error
+        control-name="attributes"
+    />
+</x-admin::form.control-group>
+```
+#### Features
+
+* **Dynamic Option Loading**:
+   * Asynchronous loading of options via AJAX
+   - Built-in pagination support with customizable page size
+   - Real-time search functionality
+   - Configurable page size (default: 20 items per page)
+
+* **Filtering Capabilities**:
+   - Entity type filtering using `entityName` parameter
+   - Support for validation types (e.g., 'number', 'text', etc.)
+   - Custom attribute filtering options
+   - Server-side search using LIKE on attribute code
+
+* **Value Handling**:
+   - Pre-selected value support via `:value` prop
+   - Built-in error handling and validation
+   - Customizable `track-by` and `label-by` fields for flexible data mapping
+
+* **Translation Support**:
+   - Automatic label translation using Laravel's translation system
+   - Locale-based content rendering
+   - Fallback handling for missing translations
+   - Support for multiple locales
+
+### Tagging
+
+The Tagging component provides an interactive interface for managing tags, combining both select and input functionality. Users can select from existing tags or create new ones dynamically.
+
+| Props           | Type      | Default | Description                                                   |
+|----------------|-----------|---------|---------------------------------------------------------------|
+| **`name`**     | `String`  | `null`  | Name of the form control                                      |
+| **`options`**  | `Array`   | `[]`    | Predefined tags available for selection                       |
+| **`value`**    | `Array`   | `[]`    | Currently selected/added tags                                 |
+| **`track-by`** | `String`  | `'id'`  | Property to use as unique identifier                         |
+| **`label-by`** | `String`  | `'name'`| Property to display as tag label                             |
+
+#### Basic Usage
+Let's assume you want to use the **`tagging`** component. You can call it like this.
+
+```html
+<x-admin::form.control-group>
+  <!-- Label for the Select Element -->
+    <x-admin::form.control-group.label>
+        Tags
+    </x-admin::form.control-group.label>
+    @php
+    // Example data for existing tags
+        $existingTags = [
+            ['id' => 1, 'name' => 'Tag 1'],
+            ['id' => 2, 'name' => 'Tag 2'],
+            ['id' => 3, 'name' => 'Tag 3'],
+        ];
+    // Example data for selected tags
+        $selectedTags = [1, 2];
+    @endphp
+
+    <x-admin::form.control-group.control
+        type="tagging"
+        name="tags"
+        :options="$existingTags"
+        :value="$selectedTags"
+        track-by="id"
+        label-by="name"
+        :placeholder="'Select or add tags...'"
+    />
+
+    <x-admin::form.control-group.error
+        control-name="tags"
+    />
+</x-admin::form.control-group>
+```
+
+#### Features
+
+* **Dual Functionality:**
+  * Select tags from dropdown or add new by typing + Enter
+  * Remove tags with × button
+  * Real-time tag addition and removal
+
+* **Tag Management:**
+  * Add new tags through text input
+  * Select existing tags from dropdown
+  * Remove selected tags easily
+  * Visual feedback for selected tags
+
+* **Customization Options:**
+  * Custom tracking `track-by` and display `label-by` fields
+  * Configurable placeholder text
+
+The Tagging component integrates seamlessly with UnoPim's form controls while providing flexible tag management capabilities. It supports both selection from existing tags and creation of new tags through direct input.
+
 ### Drawer
 
 The `drawer` component in UnoPim provides a versatile drawer that can be positioned on the top, bottom, left, or right side of the screen. It allows you to create interactive drawers that can contain various content such as headers, body, and footer sections. The drawer can be toggled open or closed, providing a clean and efficient way to display additional information or functionality.
@@ -571,124 +789,3 @@ Let's assume you want to use the **`Image/Video`** component, You can call it li
     :uploaded-videos="$product->videos"
 />
 ```
-
-
-### Async Select Controls
-
-The `async select` component provides dynamic loading of attributes with pagination and search functionality.
-
-#### Route Configuration
-
-First, define the `routes` for `async` options:
-
-```php
-Route::get('options/async', [AjaxOptionsController::class, 'getOptions'])
-    ->name('admin.example.options.async');
-```
-
-
-#### Controller Implementation
-
-```php
-<?php
-
-namespace Webkul\Example\Http\Controllers;
-
-use Illuminate\Http\JsonResponse;
-use Illuminate\Routing\Controller;
-use Webkul\Attribute\Repositories\AttributeRepository;
-
-class AjaxOptionsController extends Controller
-{
-    const DEFAULT_PER_PAGE = 20;
-
-    public function __construct(
-        protected AttributeRepository $attributeRepository
-    ) {}
-
-    public function getOptions(): JsonResponse
-    {
-        $entityName = request()->get('entityName');
-        $page = request()->get('page');
-        $query = request()->get('query', '');
-
-        $repository = $this->attributeRepository;
-
-        if (! empty($entityName)) {
-            $entityName = json_decode($entityName);
-            $repository = in_array('number', $entityName)
-                ? $repository->whereIn('validation', $entityName)
-                : $repository->whereIn('type', $entityName);
-        }
-
-        if (! empty($query)) {
-            $repository = $repository->where('code', 'LIKE', '%' . $query . '%');
-        }
-
-        $attributes = $repository->orderBy('id')
-            ->paginate(self::DEFAULT_PER_PAGE);
-
-        $options = collect($attributes->items())->map(function ($attribute) {
-            $translatedLabel = $attribute->translate(
-                core()->getRequestedLocaleCode()
-            )?->name;
-
-            return [
-                'id'    => $attribute->id,
-                'code'  => $attribute->code,
-                'label' => ! empty($translatedLabel)
-                    ? $translatedLabel
-                    : "[{$attribute->code}]",
-            ];
-        });
-
-        return new JsonResponse([
-            'options'  => $options,
-            'page'     => $attributes->currentPage(),
-            'lastPage' => $attributes->lastPage(),
-        ]);
-    }
-}
-```
-#### Component Usage
-
-```html
-<x-admin::form.control-group>
-    <x-admin::form.control-group.label>
-        @lang('admin::app.catalog.attributes.index.title')
-        <span>*</span>
-    </x-admin::form.control-group.label>
-
-    <x-admin::form.control-group.control
-        type="select"
-        name="attributes"
-        rules="required"
-        :label="trans('admin::app.catalog.attributes.index.title')"
-        track-by="id"
-        label-by="label"
-        :list-route="route('admin.example.options.async')"
-        async
-    />
-
-    <x-admin::form.control-group.error
-        control-name="attributes"
-    />
-</x-admin::form.control-group>
-```
-
-#### Features
-
-1. **Attribute Filtering**:
-   - Filter by entity type using `entityName`
-   - Support for validation types (e.g., 'number')
-   - Custom attribute type filtering
-
-2. **Search & Pagination**:
-   - Server-side search on attribute code
-   - Default page size of 20 items
-   - Ordered by ID for consistency
-
-3. **Translation Support**:
-   - Automatic label translation
-   - Fallback to attribute code
-   - Current locale detection

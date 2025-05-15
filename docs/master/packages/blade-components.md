@@ -339,30 +339,6 @@ Example with all available props:
     />
 </x-admin::form.control-group>
 ```
-#### Features
-
-* **Dynamic Option Loading**:
-   * Asynchronous loading of options via AJAX
-   - Built-in pagination support with customizable page size
-   - Real-time search functionality
-   - Configurable page size (default: 20 items per page)
-
-* **Filtering Capabilities**:
-   - Entity type filtering using `entityName` parameter
-   - Support for validation types (e.g., 'number', 'text', etc.)
-   - Custom attribute filtering options
-   - Server-side search using LIKE on attribute code
-
-* **Value Handling**:
-   - Pre-selected value support via `:value` prop
-   - Built-in error handling and validation
-   - Customizable `track-by` and `label-by` fields for flexible data mapping
-
-* **Translation Support**:
-   - Automatic label translation using Laravel's translation system
-   - Locale-based content rendering
-   - Fallback handling for missing translations
-   - Support for multiple locales
 
 ### Tagging
 
@@ -411,25 +387,6 @@ Let's assume you want to use the **`tagging`** component. You can call it like t
     />
 </x-admin::form.control-group>
 ```
-
-#### Features
-
-* **Dual Functionality:**
-  * Select tags from dropdown or add new by typing + Enter
-  * Remove tags with × button
-  * Real-time tag addition and removal
-
-* **Tag Management:**
-  * Add new tags through text input
-  * Select existing tags from dropdown
-  * Remove selected tags easily
-  * Visual feedback for selected tags
-
-* **Customization Options:**
-  * Custom tracking `track-by` and display `label-by` fields
-  * Configurable placeholder text
-
-The Tagging component integrates seamlessly with UnoPim's form controls while providing flexible tag management capabilities. It supports both selection from existing tags and creation of new tags through direct input.
 
 ### Drawer
 

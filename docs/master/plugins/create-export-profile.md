@@ -120,6 +120,7 @@ return [
         'title'       => 'data_transfer::app.exporters.products.title',
         'exporter'    => 'Webkul\Example\Helpers\Exporters\Product\Exporter',
         'source'      => 'Webkul\Product\Repositories\ProductRepository', // Specify the repository
+        'validator'   => 'Webkul\Example\Validators\JobInstances\Export\ProductJobValidator',// Validator class
         'filters'     => [
             'fields' => [
                 [
@@ -158,6 +159,238 @@ Explanation:
 - **`exporter`**: The fully-qualified namespace of the exporter class.
 - **`source`**: The data source (e.g., repository) from which the exporter will retrieve data.
 - **`filters`**: Configuration options for the exporter, such as file format and other export options.
+- **`validator`**: The validator class that will validate the export job.
+
+####   Validator for Exporter
+The validator class is responsible for validating the data before the export process begins. You can create a custom validator class in your plugin's `Validators` directory.
+
+* **Extending the Base Validator**:
+ - You can create a custom validator by extending the base `JobValidator` class.
+ - This allows you to define specific rules, messages, and attributes for your export job.
+
+ #### Creating a Custom Validator
+ ```php
+<?php
+
+namespace Webkul\Example\Validators\JobInstances\Export;
+
+use Webkul\DataTransfer\Validators\JobInstances\Default\JobValidator;
+use Webkul\Example\Rules\SeparatorTypes;
+
+class ProductJobValidator extends JobValidator
+{
+    /**
+     * Stores validation rules for data
+     */
+    protected array $rules = [
+        'filters.file' => 'required|mimes:csv,xlsx',
+    ];
+
+    /**
+     * Names to be used for attributes during generation of error message
+     */
+    protected array $attributeNames = [
+        'filters.file' => 'File',
+    ];
+
+    /**
+     * Add Custom error messages for validation
+     */
+    public function getMessages(array $options): array
+    {
+         return [
+            'filters.file.required' => 'Please select a file to Export',
+            'filters.file.mimes'    => 'The file must be a file of type: csv, xlsx',
+        ];
+    }
+
+    /**
+     * Add custom rules for validation
+     */
+    public function getRules(array $options): array
+    {
+        $this->rules['file'] = [
+            empty($options['id']) ? 'required' : 'nullable',
+            'mimes:csv,txt,xlsx,xls,html',
+            'extensions:csv,xlsx,xls',
+        ];
+
+        $this->rules['field_separator'] = ['required', new SeparatorTypes];
+
+        return $this->rules;
+    }
+
+   /**
+     * Custom names for validation attributes
+     */
+    public function getAttributeNames(array $options): array
+    {
+        return [
+            'filters.file' => 'File',
+            'field_separator' => 'Field Separator',
+        ];
+    }
+
+    /**
+     * Process data before validation
+     */
+    public function preValidationProcess(mixed $data): mixed
+    {
+        // Example: Convert field separator to a standard format
+        if (isset($data['field_separator'])) {
+            $data['field_separator'] = str_replace([';', ','], ',', $data['field_separator']);
+        }
+
+        return $data;
+    }
+
+
+}
+```
+
+#### Example with Custom Rule:
+You can also use custom validation rules by implementing the ValidationRule interface. For example, to validate allowed field separators.
+
+```php
+<?php
+
+namespace Webkul\Example\Rules;
+
+use Closure;
+use Illuminate\Contracts\Validation\ValidationRule;
+
+class SeparatorTypes implements ValidationRule
+{
+    const SEPERATOR_TYPES = [',', ';', '|'];
+
+    public function validate(string $attribute, mixed $value, Closure $fail): void
+    {
+        if (! in_array($value, self::SEPERATOR_TYPES)) {
+            $fail('core::validation.seperator-not-supported')->translate();
+        }
+    }
+}
+```
+- **`validate(array $data, array $options)`**: Main method to trigger validation. Throws ValidationException if data is invalid.
+- **`getRules(array $options)`**:Returns the validation rules. Extend this in child classes to add custom rules.
+- **`getAttributeNames(array $options)`**: Maps technical keys to human-readable names in error messages.
+- **`getMessages(array $options)`**: Adds custom error messages. You can override this to add/merge messages.
+- **`preValidationProcess(mixed $data)`**: Use this if you need to modify the data before validation.
+
+####  Filter Fields for Exporters
+
+Filters allow users to customize export behavior by offering configurable options. All filters should be defined inside the `filters['fields']` array. These will automatically appear in the UnoPim admin panel under:
+
+> **Data Transfer > Export > Create Export**
+
+Below are examples of supported filter types — **add each one inside the `fields` array as shown**:
+
+
+- **Boolean**: A toggle switch to enable or disable the feature.
+ ```php
+
+ 'filters' => [
+    'fields' => [
+        [
+            'name'       => 'is_active',
+            'title'      => 'data_transfer::app.exporters.products.is_active',
+            'type'       => 'boolean',
+            'required'   => false,
+        ],
+    ],
+],
+```
+- **Select**: A dropdown menu to choose one option from a list.
+```php
+'filters' => [
+    'fields' => [
+        [
+            'name'       => 'file_format',
+            'title'      => 'data_transfer::app.exporters.products.file_format',
+            'type'       => 'select',
+            'required'   => true,
+            'validation' => 'required',
+            'options'    => [
+                [
+                    'value' => 'csv',
+                    'label' => 'CSV',
+                ],
+                [
+                    'value' => 'xlsx',
+                    'label' => 'XLSX',
+                ],
+            ],
+        ],
+    ],
+],
+```
+- **Multiselect**: A dropdown menu allowing multiple selections.
+```php
+'filters' => [
+    'fields' => [
+        [
+            'name'       => 'categories',
+            'title'      => 'data_transfer::app.exporters.products.categories',
+            'type'       => 'multiselect',
+            'required'   => true,
+            'validation' => 'required',
+            'options'    => [
+                [
+                    'value' => 1,
+                    'label' => 'Electronics',
+                ],
+                [
+                    'value' => 2,
+                    'label' => 'Books',
+                ],
+            ],
+        ],
+    ],
+],
+```
+- **Date**: A date picker for selecting a specific date.
+```php
+'filters' => [
+    'fields' => [
+        [
+            'name'       => 'start_date',
+            'title'      => 'data_transfer::app.exporters.products.start_date',
+            'type'       => 'date',
+            'required'   => true,
+            'validation' => 'required|date',
+        ],
+    ],
+],
+```
+- **Datetime**: A date and time picker for selecting a specific date and time.
+```php
+'filters' => [
+    'fields' => [
+        [
+            'name'       => 'export_time',
+            'title'      => 'data_transfer::app.exporters.products.export_time',
+            'type'       => 'datetime',
+            'required'   => true,
+            'validation' => 'required|date',
+        ],
+    ],
+],
+```
+- **Textarea**: A larger text input for multi-line text.
+```php
+'filters' => [
+    'fields' => [
+        [
+            'name'       => 'comments',
+            'title'      => 'data_transfer::app.exporters.products.comments',
+            'type'       => 'textarea',
+            'required'   => false,
+        ],
+    ],
+],
+```
+
+
 
 ### Step 3: Load the Configuration in the Service Provider
 
@@ -212,217 +445,4 @@ Always restart the queue workers after:
 - Installing or updating modules
 
 This ensures your changes take effect in the queue system.
-:::
-
-## Job Validators and Filters for Export
-
-This guide explains how to implement `job validators and filters` for export operations in UnoPim.
-
-### Job Validators
-
-Job validators ensure that export configurations meet required specifications before processing.
-
-#### Creating an Export Validator
-
-Create validators for specific export types by extending the base validator:
-
-```php
-<?php
-
-namespace Webkul\Example\Validators\JobInstances\Export;
-
-use Webkul\DataTransfer\Validators\JobInstances\Default\JobValidator;
-
-class ProductExportValidator extends JobValidator
-{
-    /**
-     * Validation rules for export data
-     */
-    protected array $rules = [
-        'filters.file_format' => 'required|in:Csv,Xls,Xlsx',
-        'filters.with_media'  => 'in:1,0',
-        'filters.locale'      => 'required',
-        'filters.channel'     => 'required'
-    ];
-
-    /**
-     * Custom attribute names for error messages
-     */
-    protected array $attributeNames = [
-        'filters.file_format' => 'File Format',
-        'filters.with_media'  => 'With Media',
-        'filters.locale'      => 'Locale',
-        'filters.channel'     => 'Channel'
-    ];
-
-    /**
-     * Custom error messages
-     */
-    public function getMessages(array $options): array
-    {
-        return [
-            'filters.file_format.required' => 'Please select a file format',
-            'filters.file_format.in' => 'Invalid file format selected'
-        ];
-    }
-}
-```
-
-### Filters for Export
-
-Before implementing filters, ensure you have completed the `Register the Exporter` process.
-
-#### Filter Configuration
-
-Add the filters configuration in your `exporter.php`:
-
-```php
-<?php
-
-return [
-    'products' => [
-        'title'    => 'data_transfer::app.exporters.products.title',
-        'exporter' => 'Webkul\Example\Helpers\Exporters\Product\Exporter',
-        'source'   => 'Webkul\Product\Repositories\ProductRepository',
-
-        'filters' => [
-            'fields' => [
-                [
-                    'name'       => 'file_format',
-                    'title'      => 'data_transfer::app.exporters.fields.file-format',
-                    'type'       => 'select',
-                    'required'   => true,
-                    'validation' => 'required',
-                    'options'    => [
-                        [
-                            'value' => 'Csv',
-                            'label' => 'CSV',
-                        ],
-                        [
-                            'value' => 'Xlsx',
-                            'label' => 'XLSX',
-                        ]
-                    ]
-                ],
-                [
-                    'name'       => 'channel',
-                    'title'      => 'data_transfer::app.exporters.fields.channel',
-                    'type'       => 'select',
-                    'required'   => true,
-                    'validation' => 'required',
-                    'async'      => true,
-                    'track_by'   => 'id',
-                    'label_by'   => 'label',
-                    'list_route' => 'admin.channels.fetch-all' // Route to fetch channels
-                ],
-
-            ]
-        ]
-    ]
-];
-```
-
-#### Filter Field Properties
-
-| Property | Type | Description | Example |
-|----------|------|-------------|----------|
-| **`name`** | String | Unique identifier for the filter | `'file_format'` |
-| **`title`** | String | Display label for the filter | `'app.exporters.fields.file-format'` |
-| **`type`** | String | Input type (`select`, `boolean`) | `'select'` |
-| **`required`** | Boolean | Whether the field is mandatory | `true` |
-| **`validation`** | String | Laravel validation rules | `'required'` |
-| **`options`** | Array | Static options for select fields | `[['value' => 'Csv', 'label' => 'CSV']]` |
-| **`async`** | Boolean | Enable async loading of options | `true` |
-| **`track_by`** | String | Field to use as option value | `'id'` |
-| **`label_by`** | String | Field to display in the select | `'label'` |
-| **`list_route`** | String | Route for fetching options | `'admin.channels.fetch-all'` |
-
-#### Available Filter Types
-
-1. **Select Filter**:
-   - Single selection from options
-   - Can be static (options array) or dynamic (async)
-   - Example: file format, channel selection
-
-2. **Boolean Filter**:
-   - Simple true/false selection
-   - Example: export with media files
-
-####  Implementing Async Options
-To implement async options for the filter, you need to create a route and a controller method that returns the options in JSON format.
-
-1. **Route Definition**:
-
-```php
-Route::get('channel/fetch-all', [OptionController::class, 'listChannel'])
-    ->name('admin.channels.fetch-all');
-```
-
-2. **Controller for Async Options**:
-
-```php
-<?php
-
-namespace Webkul\ReadXml\Http\Controllers;
-
-use Illuminate\Http\JsonResponse;
-use Webkul\Core\Repositories\ChannelRepository;
-
-class OptionController extends Controller
-{
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-     public function __construct(
-        protected ChannelRepository $channelRepository,
-      ) {}
-
-    /**
-     * Return All Channels
-     */
-    public function listChannel(): JsonResponse
-    {
-        $queryParams = request()->except(['page', 'query', 'entityName', 'attributeId']);
-        $searchIdentifiers = isset($queryParams['identifiers']['columnName']) ? $queryParams['identifiers'] : [];
-        $searchQuery = request()->get('query');
-        $channelRepository = $this->channelRepository;
-
-        if (! empty($searchIdentifiers)) {
-            $values = $searchIdentifiers['values'] ?? [];
-
-            $channelRepository = $channelRepository->whereIn(
-                'code',
-                is_array($values) ? $values : [$values]
-            );
-        }
-        if (! empty($searchQuery)) {
-            $channelRepository = $channelRepository->whereTranslationLike('name', '%'.$searchQuery.'%')
-                ->orWhere('code', $searchQuery);
-        }
-
-        $allActivateChannel = $channelRepository->get()->toArray();
-
-        $allChannel = [];
-
-        foreach ($allActivateChannel as $channel) {
-            $allChannel[] = [
-                'id'    => $channel['code'],
-                'label' => $channel['name'] ?? $channel['code'],
-            ];
-        }
-
-        return new JsonResponse([
-            'options' => $allChannel,
-        ]);
-    }
-}
-````
-
-::: tip Important Notes
-- Export filters appear automatically in Data Transfer > Exports > Create Export
-- The data-transfer module handles all UI rendering
-- Filter configurations define both the UI and validation rules
-- Boolean filters are rendered as toggles/checkboxes
 :::

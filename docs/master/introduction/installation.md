@@ -183,7 +183,7 @@ To install UnoPim using our GUI installer, you can follow any of the following m
 
 ### Method 2: Using Downloaded Package
 
-1. Download [UnoPim from our official repository](https://unopim.com/download/).
+1. [Download UnoPim](https://unopim.com/download/) from our official repository.
 
 2. Extract the contents of the downloaded package to your desired directory.
 
