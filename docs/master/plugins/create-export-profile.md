@@ -271,11 +271,11 @@ class SeparatorTypes implements ValidationRule
     }
 }
 ```
-- **`validate(array $data, array $options)`**: Main method to trigger validation. Throws ValidationException if data is invalid.
-- **`getRules(array $options)`**:Returns the validation rules. Extend this in child classes to add custom rules.
-- **`getAttributeNames(array $options)`**: Maps technical keys to human-readable names in error messages.
-- **`getMessages(array $options)`**: Adds custom error messages. You can override this to add/merge messages.
-- **`preValidationProcess(mixed $data)`**: Use this if you need to modify the data before validation.
+- **`validate()`**: Main method to trigger validation. Throws ValidationException if data is invalid.
+- **`getRules()`**: Returns the validation rules. Extend this in child classes to add custom rules.
+- **`getMessages()`**: Adds custom error messages. You can override this to add/merge messages.
+- **`getAttributeNames()`**: Maps technical keys to human-readable names in error messages.
+- **`preValidationProcess()`**: Use this if you need to modify the data before validation.
 
 ####  Filter Fields for Exporters
 
@@ -389,8 +389,6 @@ Below are examples of supported filter types — **add each one inside the `fiel
     ],
 ],
 ```
-
-
 
 ### Step 3: Load the Configuration in the Service Provider
 

@@ -82,6 +82,59 @@ If you have Docker/Docker Compose installed, follow these steps:
 > If MySQL is already running on your system, change the MySQL port in the `docker-compose.yml` and `.env` files.
 > Run `docker-compose up -d` again to apply changes.
 
+
+
+## Install Using GUI Installer
+
+To install UnoPim using our GUI installer, you can follow any of the following methods:
+
+### Method 1: Direct Installation
+
+1. Choose the directory where you want to install UnoPim. Open your terminal and navigate to this directory.
+
+2. Run the following command in your terminal to install UnoPim:
+    ```sh
+    composer create-project unopim/unopim
+    ```
+
+3. Configure your HTTP server to point to the `public/` directory of the project.
+
+4. Open your browser and access:
+    ```
+    http://localhost/unopim/public/
+    ```
+    This will launch the UnoPim installer.
+
+### Method 2: Using Downloaded Package
+
+1. [Download UnoPim](https://unopim.com/download/) from our official repository.
+
+2. Extract the contents of the downloaded package to your desired directory.
+
+3. Navigate to the project root directory.
+
+4. Run the following command:
+    ```sh
+    composer create
+    ```
+
+5. Configure your HTTP server to point to the `public/` directory of the project.
+
+6. Open your browser and access:
+    ```
+    http://localhost/unopim/public/
+    ```
+    This will launch the UnoPim installer.
+
+::: warning Important Prerequisites
+Make sure your system meets these requirements:
+- Composer is installed on your system
+- PHP >= 8.1
+- Required PHP extensions are enabled
+- Proper directory permissions are set
+:::
+
+
 ## Start Using UnoPim
 
 ### On a Production Server
@@ -156,56 +209,3 @@ Add the following entry to your **`/etc/hosts`** file:
     127.0.0.1    unopim.local
    ```
 Your virtual host configuration for UnoPIM is now complete. Visit **`http://unopim.local`** in your browser to access the application.
-
-
-
-
-## Install Using GUI Installer
-
-To install UnoPim using our GUI installer, you can follow any of the following methods:
-
-### Method 1: Direct Installation
-
-1. Choose the directory where you want to install UnoPim. Open your terminal and navigate to this directory.
-
-2. Run the following command in your terminal to install UnoPim:
-    ```sh
-    composer create-project unopim/unopim
-    ```
-
-3. Configure your HTTP server to point to the `public/` directory of the project.
-
-4. Open your browser and access:
-    ```
-    http://localhost/unopim/public/
-    ```
-    This will launch the UnoPim installer.
-
-### Method 2: Using Downloaded Package
-
-1. [Download UnoPim](https://unopim.com/download/) from our official repository.
-
-2. Extract the contents of the downloaded package to your desired directory.
-
-3. Navigate to the project root directory.
-
-4. Run the following command:
-    ```sh
-    composer create
-    ```
-
-5. Configure your HTTP server to point to the `public/` directory of the project.
-
-6. Open your browser and access:
-    ```
-    http://localhost/unopim/public/
-    ```
-    This will launch the UnoPim installer.
-
-::: warning Important Prerequisites
-Make sure your system meets these requirements:
-- Composer is installed on your system
-- PHP >= 8.1
-- Required PHP extensions are enabled
-- Proper directory permissions are set
-:::

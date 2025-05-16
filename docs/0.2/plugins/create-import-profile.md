@@ -188,13 +188,252 @@ return [
         'title'       => 'data_transfer::app.importers.products.title',  // Display title for the importer
         'importer'    => 'Webkul\Example\Helpers\Importers\Product\Importer',  // Importer class
         'sample_path' => 'data-transfer/samples/products.csv',  // Path to a sample CSV file for users
-    ],
+        'validator'   => 'Webkul\Example\Validators\JobInstances\Import\ProductJobValidator',// Validator class
+        'filters' => [
+            'fields' => [
+                [
+                    'name'       => 'file',
+                    'title'      => 'data_transfer::app.importers.products.fields.file',
+                    'type'       => 'file',
+                    'required'   => true,
+                    'async'      => false,
+                    'validation' => 'required',
+                ],
+            ],
+        ],
+  ],
 ];
+```
+Explanation:
+ - **`title`**: The title displayed in the Create Import page.
+ - **`filters`**: An array of filter fields that will be displayed in the Create Import page.
+ - **`importer`**: The fully qualified class name of the importer you created.
+ - **`validator`**: The validator class that will be used to validate the import data.
+ - **`sample_path`**: The path to a sample CSV file that users can download to understand the expected format.
+
+####   Validator for Import
+They are used to validate the input data before it is processed by the importer.
+
+* **Extending the Base Validator**:
+   - You can create a custom validator by extending the base `JobValidator` class.
+   - This allows you to define specific rules, messages, and attributes for your import type.
+
+#### Creating a Custom Validator
+
+To add a new validation rule, extend the `JobValidator` class and define the rule in the `$rules` array. For example:
+
+```php
+<?php
+
+namespace Webkul\Example\Validators\JobInstances\Import;
+
+use Webkul\DataTransfer\Validators\JobInstances\Default\JobValidator;
+use Webkul\Example\Rules\SeparatorTypes;
+
+class ProductJobValidator extends JobValidator
+{
+    /**
+     * Stores validation rules for data
+     */
+    protected array $rules = [
+        'filters.file' => 'required|mimes:csv,xlsx',
+    ];
+
+    /**
+     * Names to be used for attributes during generation of error message
+     */
+    protected array $attributeNames = [
+        'filters.file' => 'File',
+    ];
+
+    /**
+     * Add Custom error messages for validation
+     */
+    public function getMessages(array $options): array
+    {
+         return [
+            'filters.file.required' => 'Please select a file to import',
+            'filters.file.mimes'    => 'The file must be a file of type: csv, xlsx',
+        ];
+    }
+
+    /**
+     * Add custom rules for validation
+     */
+    public function getRules(array $options): array
+    {
+        $this->rules['file'] = [
+            empty($options['id']) ? 'required' : 'nullable',
+            'mimes:csv,txt,xlsx,xls,html',
+            'extensions:csv,xlsx,xls',
+        ];
+
+        $this->rules['field_separator'] = ['required', new SeparatorTypes];
+
+        return $this->rules;
+    }
+
+   /**
+     * Custom names for validation attributes
+     */
+    public function getAttributeNames(array $options): array
+    {
+        return [
+            'filters.file' => 'File',
+            'field_separator' => 'Field Separator',
+        ];
+    }
+
+    /**
+     * Process data before validation
+     */
+    public function preValidationProcess(mixed $data): mixed
+    {
+        // Example: Convert field separator to a standard format
+        if (isset($data['field_separator'])) {
+            $data['field_separator'] = str_replace([';', ','], ',', $data['field_separator']);
+        }
+
+        return $data;
+    }
+
+
+}
+```
+#### Example with Custom Rule:
+You can also use custom validation rules by implementing the ValidationRule interface. For example, to validate allowed field separators.
+
+```php
+<?php
+
+namespace Webkul\Example\Rules;
+
+use Closure;
+use Illuminate\Contracts\Validation\ValidationRule;
+
+class SeparatorTypes implements ValidationRule
+{
+    const SEPERATOR_TYPES = [',', ';', '|'];
+
+    public function validate(string $attribute, mixed $value, Closure $fail): void
+    {
+        if (! in_array($value, self::SEPERATOR_TYPES)) {
+            $fail('core::validation.seperator-not-supported')->translate();
+        }
+    }
+}
+```
+- **`validate()`**: Main method to trigger validation. Throws ValidationException if data is invalid.
+- **`getRules()`**: Returns the validation rules. Extend this in child classes to add custom rules.
+- **`getAttributeNames()`**: Maps technical keys to human-readable names in error messages.
+- **`getMessages()`**: Adds custom error messages. You can override this to add/merge messages.
+- **`preValidationProcess()`**: Use this if you need to modify the data before validation.
+
+
+##### Filter Fields for Import
+Filters allow users to customize import behavior by offering configurable options. All filters should be defined inside the `filters['fields']` array. These will automatically appear in the UnoPim admin panel under:
+
+> **Data Transfer > Import > Create Import**
+
+Below are examples of supported filter types — **add each one inside the `fields` array as shown**:
+
+- **Boolean**: A toggle switch to enable or disable the feature.
+ ```php
+
+ 'filters' => [
+    'fields' => [
+        [
+            'name'       => 'is_active',
+            'title'      => 'data_transfer::app.importers.products.fields.is_active',
+            'type'       => 'boolean',
+            'required'   => false,
+        ],
+    ],
+],
+```
+
+- **Select**: A dropdown for single selection.
+```php
+'filters' => [
+    'fields' => [
+        [
+            'name'       => 'channel',
+            'title'      => 'data_transfer::app.importers.products.fields.channel',
+            'type'       => 'select',
+            'required'   => true,
+            'validation' => 'required',
+            'async'      => true,
+            'track_by'   => 'id',
+            'label_by'   => 'label',
+            'list_route' => 'admin.channels.fetch-all', // Route for fetching options
+        ],
+    ],
+],
+```
+
+- **Multiselect**: A dropdown for multiple selections.
+
+```php
+'filters' => [
+    'fields' => [
+        [
+            'name'       => 'categories',
+            'title'      => 'data_transfer::app.importers.products.fields.categories',
+            'type'       => 'multiselect',
+            'required'   => true,
+            'validation' => 'required',
+            'async'      => true,
+            'track_by'   => 'id',
+            'label_by'   => 'label',
+            'list_route' => 'admin.categories.fetch-all', // Route for fetching options
+        ],
+    ],
+],
+```
+- **Date**: A date picker.
+```php
+'filters' => [
+    'fields' => [
+        [
+            'name'       => 'import_date',
+            'title'      => 'data_transfer::app.importers.products.fields.import_date',
+            'type'       => 'date',
+            'required'   => false,
+        ],
+    ],
+],
+```
+- **Datetime**: A date and time picker.
+```php
+'filters' => [
+    'fields' => [
+        [
+            'name'       => 'import_datetime',
+            'title'      => 'data_transfer::app.importers.products.fields.import_datetime',
+            'type'       => 'datetime',
+            'required'   => false,
+        ],
+    ],
+],
+```
+- **Textarea**: A multi-line text input.
+```php
+'filters' => [
+    'fields' => [
+        [
+            'name'       => 'description',
+            'title'      => 'data_transfer::app.importers.products.fields.description',
+            'type'       => 'textarea',
+            'required'   => false,
+        ],
+    ],
+],
 ```
 
 ### Step 3: Load the Configuration in the Service Provider
 
 To make sure the configuration is loaded into the system, register it in your service provider using the `mergeConfigFrom` method. Add the following code to the `register()` method in your `ExampleServiceProvider`:
+
 
 ```php
 public function register()
@@ -206,7 +445,6 @@ public function register()
 ```
 
 This ensures that the `importer.php` configuration is merged into the system, allowing UnoPim to recognize the importer.
-
 
 ## Step 4: Queue Operations
 

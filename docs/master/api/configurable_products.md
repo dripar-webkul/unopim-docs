@@ -307,6 +307,7 @@ Use the [Common Headers](#common-headers).
 :::
 
 ---
+
 ## Patch a Configurable Product
 
 **Endpoint:**

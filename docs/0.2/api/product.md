@@ -15,11 +15,11 @@ For all API requests, include the following headers:
 
 ## Get All Products
 
-**Endpoint:**  
+**Endpoint:**
 ```
 GET {{url}}/api/v1/rest/products
 ```
-**Headers:**  
+**Headers:**
 Use the [Common Headers](#common-headers).
 
 ### Query Parameters
@@ -32,68 +32,68 @@ Use the [Common Headers](#common-headers).
 
 ### Usage Examples
 
-- **Limit:**  
+- **Limit:**
   Retrieve 10 products per page.
   ```http
   GET {{url}}/api/v1/rest/products?limit=10
   ```
 
-- **Page:**  
+- **Page:**
   Fetch products from page 1.
   ```http
   GET {{url}}/api/v1/rest/products?page=1
   ```
 
-- **Filters:**  
+- **Filters:**
   Filters refine query results based on specific product attributes. You can combine multiple filters to achieve the desired output.
 
   #### Available Filters
 
   1. **sku**
-     - **Operators:** 
+     - **Operators:**
        - `=`: Exact match for the specified SKU.
        - `IN`: Matches any of the SKUs in the provided list.
        - `NOT IN`: Excludes any of the SKUs in the provided list.
 
   2. **parent**
-     - **Operators:** 
+     - **Operators:**
        - `=`: Exact match for the parent value.
 
   3. **status**
-     - **Operators:** 
+     - **Operators:**
        - `=`: Exact match for the status value.
 
   4. **categories**
-     - **Operators:** 
+     - **Operators:**
        - `IN`: Matches any of the categories in the provided list.
        - `NOT IN`: Excludes any of the categories in the provided list.
 
   5. **family**
-     - **Operators:** 
+     - **Operators:**
        - `IN`: Matches any of the family types in the provided list.
        - `NOT IN`: Excludes any of the family types in the provided list.
 
 #### Example Usage
 
-- **Filter by SKU:**  
+- **Filter by SKU:**
   Retrieve products with specific SKUs.
   ```json
   {"sku":[{"operator":"IN","value":["305312", "584577"]}]}
   ```
 
-- **Filter by Parent:**  
+- **Filter by Parent:**
   Retrieve products with the parent set to `"root"`.
   ```json
   {"parent":[{"operator":"=","value":"root"}]}
   ```
 
-- **Filter by Status:**  
+- **Filter by Status:**
   Retrieve products with status set to `true`.
   ```json
   {"status":[{"operator":"=","value":true}]}
   ```
 
-- **Combined Query:**  
+- **Combined Query:**
   Retrieve 10 products from page 1 that belong to the `root` parent and have a status of `true`.
   ```http
   GET {{url}}/api/v1/rest/products?limit=10&page=1&filters={"parent":[{"operator":"=","value":"root"}],"status":[{"operator":"=","value":true}]}
@@ -150,11 +150,11 @@ The response will return a list of products in JSON format:
 
 ## Get Product by SKU
 
-**Endpoint:**  
+**Endpoint:**
 ```
 GET {{url}}/api/v1/rest/products/{sku}
 ```
-**Headers:**  
+**Headers:**
 Use the [Common Headers](#common-headers).
 
 ### Path Parameter
@@ -163,7 +163,7 @@ Use the [Common Headers](#common-headers).
 |-------|-----------------------------------|--------|
 | `sku` | The unique SKU of the product     | String |
 
-Example:  
+Example:
 ```
 GET {{url}}/api/v1/rest/products/1111111304
 ```
@@ -192,11 +192,11 @@ GET {{url}}/api/v1/rest/products/1111111304
 
 ## Create a Product
 
-**Endpoint:**  
+**Endpoint:**
 ```
 POST {{url}}/api/v1/rest/products
 ```
-**Headers:**  
+**Headers:**
 Use the [Common Headers](#common-headers).
 
 ### Payload
@@ -266,11 +266,11 @@ Use the [Common Headers](#common-headers).
 
 ## Update a Product
 
-**Endpoint:**  
+**Endpoint:**
 ```
 PUT {{url}}/api/v1/rest/products/{sku}
 ```
-**Headers:**  
+**Headers:**
 Use the [Common Headers](#common-headers).
 
 ### Path Parameter
@@ -279,7 +279,7 @@ Use the [Common Headers](#common-headers).
 |-------|-----------------------------------|--------|
 | `sku` | The unique SKU of the product     | String |
 
-Example:  
+Example:
 ```
 PUT {{url}}/api/v1/rest/products/44441
 ```
@@ -342,6 +342,89 @@ PUT {{url}}/api/v1/rest/products/44441
 {
   "success": true,
   "message": "Product updated successfully"
+}
+```
+:::
+
+## Patch a Product
+
+**Endpoint:**
+```
+PATCH {{url}}/api/v1/rest/products/{sku}
+```
+**Headers:**
+Use the [Common Headers](#common-headers).
+
+### Path Parameter
+
+| Name  | Description                   | Type   |
+|-------|-------------------------------|--------|
+| `sku` | The unique SKU of the product | String |
+
+Example:
+```
+PATCH {{url}}/api/v1/rest/products/44441
+```
+
+### Payload
+Only include the fields that need to be updated:
+
+```json
+{
+    "values": {
+        "common": {
+            "Name": "Updated Product Name",
+            "description": "<p>Partially Updated Description</p>"
+        },
+        "categories": [
+            "master",
+            "master_accessories"
+        ]
+    }
+}
+```
+
+### Response
+
+::: details Response
+```json
+{
+  "success": true,
+  "message": "Product updated successfully"
+}
+```
+:::
+
+---
+
+## Delete a Product
+
+**Endpoint:**
+```
+DELETE {{url}}/api/v1/rest/products/{sku}
+```
+**Headers:**
+Use the [Common Headers](#common-headers).
+
+### Path Parameter
+
+| Name  | Description                   | Type   |
+|-------|-------------------------------|--------|
+| `sku` | The unique SKU of the product | String |
+
+Example:
+```
+DELETE {{url}}/api/v1/rest/products/44441
+```
+
+### Response
+
+::: details Response
+```json
+{
+  "success": true,
+  "message": "Product deleted successfully",
+  "sku": "44441"
 }
 ```
 :::

@@ -206,10 +206,10 @@ return [
 ```
 Explanation:
  - **`title`**: The title displayed in the Create Import page.
- - **`importer`**: The fully qualified class name of the importer you created.
- - **`sample_path`**: The path to a sample CSV file that users can download to understand the expected format.
- - **`validator`**: The validator class that will be used to validate the import data.
  - **`filters`**: An array of filter fields that will be displayed in the Create Import page.
+ - **`importer`**: The fully qualified class name of the importer you created.
+ - **`validator`**: The validator class that will be used to validate the import data.
+ - **`sample_path`**: The path to a sample CSV file that users can download to understand the expected format.
 
 ####   Validator for Import
 They are used to validate the input data before it is processed by the importer.
@@ -323,11 +323,11 @@ class SeparatorTypes implements ValidationRule
     }
 }
 ```
-- **`validate(array $data, array $options)`**: Main method to trigger validation. Throws ValidationException if data is invalid.
-- **`getRules(array $options)`**:Returns the validation rules. Extend this in child classes to add custom rules.
-- **`getAttributeNames(array $options)`**: Maps technical keys to human-readable names in error messages.
-- **`getMessages(array $options)`**: Adds custom error messages. You can override this to add/merge messages.
-- **`preValidationProcess(mixed $data)`**: Use this if you need to modify the data before validation.
+- **`validate()`**: Main method to trigger validation. Throws ValidationException if data is invalid.
+- **`getRules()`**: Returns the validation rules. Extend this in child classes to add custom rules.
+- **`getAttributeNames()`**: Maps technical keys to human-readable names in error messages.
+- **`getMessages()`**: Adds custom error messages. You can override this to add/merge messages.
+- **`preValidationProcess()`**: Use this if you need to modify the data before validation.
 
 
 ##### Filter Fields for Import
@@ -483,135 +483,3 @@ Always restart the queue workers after:
 
 This ensures your changes take effect in the queue system.
 :::
-
-<!--
-## Job Validators and Filters for Import
-
-This guide explains how to implement `job validators` and `filters` for import operations in UnoPim.
-
----
-
-### Job Validators
-
-Job validators ensure that import configurations and data meet required specifications before processing. They are used to validate the input data before it is processed by the importer.
-
-#### How Job Validators Work
-
-* **Base Validator**:
-   - The `JobValidator` class provides a base structure for validation.
-   - It includes:
-     - **Rules**: Validation rules for fields.
-     - **Messages**: Custom error messages for validation failures.
-     - **Attribute Names**: Human-readable names for fields.
-
-* **Extending the Base Validator**:
-   - You can create a custom validator by extending the base `JobValidator` class.
-   - This allows you to define specific rules, messages, and attributes for your import type.
-
-#### Adding a New Validation Rule
-
-To add a new validation rule, extend the `JobValidator` class and define the rule in the `$rules` array. For example:
-
-```php
-<?php
-
-namespace Webkul\Example\Validators\JobInstances\Import;
-
-use Webkul\DataTransfer\Validators\JobInstances\Default\JobValidator;
-
-class CustomImportValidator extends JobValidator
-{
-    protected array $rules = [
-        'file' => [
-            'required',
-            'mimes:csv,xlsx',
-        ],
-        'batch_size' => 'required|integer|min:1',
-        'field_separator' => 'required|in:,,;,tab',
-        'validation_strategy' => 'required|in:stop-on-errors,skip-errors',
-        'allowed_errors' => 'required|integer|min:0',
-        'custom_field' => 'required|string|max:255', // New validation rule
-    ];
-
-    protected array $attributeNames = [
-        'file' => 'Import File',
-        'batch_size' => 'Batch Size',
-        'field_separator' => 'Field Separator',
-        'validation_strategy' => 'Validation Strategy',
-        'allowed_errors' => 'Allowed Errors',
-        'custom_field' => 'Custom Field', // New attribute name
-    ];
-
-    public function getMessages(array $options): array
-    {
-        return [
-            'file.required' => 'Please select a file to import',
-            'file.mimes' => 'File must be a CSV or Excel document',
-            'custom_field.required' => 'The custom field is required', // New error message
-        ];
-    }
-}
-```
-
----
-
-### Filters for Import
-
-Filters are used to customize and control the import process by providing additional configuration options and validation rules. These filters will automatically appear in the UnoPim admin panel under Data Transfer > Imports > Create Import.
-
-#### Available Filter Types
-
-The following filter types are supported:
-
-1. **Boolean**: A toggle or checkbox input.
-2. **Select**: A dropdown for single selection.
-3. **Multiselect**: A dropdown for multiple selections.
-4. **Date**: A date picker.
-5. **Datetime**: A date and time picker.
-6. **Textarea**: A multi-line text input.
-
-#### Filter Configuration
-
-Add the filters configuration in your `importer.php`:
-
-```php
-<?php
-
-return [
-    'products' => [
-        'title'       => 'data_transfer::app.importers.products.title',  // Display title for the importer
-        'importer'    => 'Webkul\Example\Helpers\Importers\Product\Importer',  // Importer class
-        'sample_path' => 'data-transfer/samples/products.csv',  // Path to a sample CSV file for users
-        'validator'   => 'Webkul\Example\Validators\JobInstances\Import\CustomImportValidator', // Custom validator class
-        'filters' => [
-            'fields' => [
-                [
-                    'name'       => 'channel',
-                    'title'      => 'data_transfer::app.importers.products.fields.channel',
-                    'type'       => 'select',
-                    'required'   => true,
-                    'validation' => 'required',
-                    'async'      => true,
-                    'track_by'   => 'id',
-                    'label_by'   => 'label',
-                    'list_route' => 'admin.channels.fetch-all', // Route for fetching options
-                ],
-                [
-                    'name'       => 'is_active',
-                    'title'      => 'data_transfer::app.importers.products.fields.is_active',
-                    'type'       => 'boolean', // New filter type
-                    'required'   => false,
-                ],
-                [
-                    'name'       => 'import_date',
-                    'title'      => 'data_transfer::app.importers.products.fields.import_date',
-                    'type'       => 'date', // New filter type
-                    'required'   => false,
-                ],
-                // Add more filter fields as needed
-            ],
-        ],
-    ],
-];
-```
---- -->

@@ -90,6 +90,7 @@ module.exports = [{
             ['advanced/render-event', 'View Render Event'],
             ['advanced/security-practice', 'Best Security Practices'],
             ['advanced/queue-management', 'Queue Management'],
+            ['advanced/elasticsearch-configuration', 'Elasticsearch Configuration'],
         ])
     },
     {

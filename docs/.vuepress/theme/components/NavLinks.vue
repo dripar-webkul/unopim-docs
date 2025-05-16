@@ -73,14 +73,18 @@ export default {
 
   data() {
     return {
-      version: '0.1',
+      version: '0.2',
     };
   },
 
-  mounted() {
-    let currentPath = this.$route.path.split('/');
-
-    this.version = currentPath[1] || '0.1';
+  watch: {
+    '$route': {
+      handler(to) {
+        const currentPath = to.path.split('/');
+        this.version = currentPath[1] || '0.2';
+      },
+      immediate: true
+    }
   },
 
   computed: {
@@ -169,7 +173,7 @@ export default {
 
       currentPath[1] = this.version;
 
-      this.$router.push(currentPath.join('/'));
+      this.$router.push({path: currentPath.join('/'), query: this.$route.query });
     },
   },
 }

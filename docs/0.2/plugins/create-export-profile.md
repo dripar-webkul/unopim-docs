@@ -120,6 +120,7 @@ return [
         'title'       => 'data_transfer::app.exporters.products.title',
         'exporter'    => 'Webkul\Example\Helpers\Exporters\Product\Exporter',
         'source'      => 'Webkul\Product\Repositories\ProductRepository', // Specify the repository
+        'validator'   => 'Webkul\Example\Validators\JobInstances\Export\ProductJobValidator',// Validator class
         'filters'     => [
             'fields' => [
                 [
@@ -158,6 +159,236 @@ Explanation:
 - **`exporter`**: The fully-qualified namespace of the exporter class.
 - **`source`**: The data source (e.g., repository) from which the exporter will retrieve data.
 - **`filters`**: Configuration options for the exporter, such as file format and other export options.
+- **`validator`**: The validator class that will validate the export job.
+
+####   Validator for Exporter
+The validator class is responsible for validating the data before the export process begins. You can create a custom validator class in your plugin's `Validators` directory.
+
+* **Extending the Base Validator**:
+ - You can create a custom validator by extending the base `JobValidator` class.
+ - This allows you to define specific rules, messages, and attributes for your export job.
+
+ #### Creating a Custom Validator
+ ```php
+<?php
+
+namespace Webkul\Example\Validators\JobInstances\Export;
+
+use Webkul\DataTransfer\Validators\JobInstances\Default\JobValidator;
+use Webkul\Example\Rules\SeparatorTypes;
+
+class ProductJobValidator extends JobValidator
+{
+    /**
+     * Stores validation rules for data
+     */
+    protected array $rules = [
+        'filters.file' => 'required|mimes:csv,xlsx',
+    ];
+
+    /**
+     * Names to be used for attributes during generation of error message
+     */
+    protected array $attributeNames = [
+        'filters.file' => 'File',
+    ];
+
+    /**
+     * Add Custom error messages for validation
+     */
+    public function getMessages(array $options): array
+    {
+         return [
+            'filters.file.required' => 'Please select a file to Export',
+            'filters.file.mimes'    => 'The file must be a file of type: csv, xlsx',
+        ];
+    }
+
+    /**
+     * Add custom rules for validation
+     */
+    public function getRules(array $options): array
+    {
+        $this->rules['file'] = [
+            empty($options['id']) ? 'required' : 'nullable',
+            'mimes:csv,txt,xlsx,xls,html',
+            'extensions:csv,xlsx,xls',
+        ];
+
+        $this->rules['field_separator'] = ['required', new SeparatorTypes];
+
+        return $this->rules;
+    }
+
+   /**
+     * Custom names for validation attributes
+     */
+    public function getAttributeNames(array $options): array
+    {
+        return [
+            'filters.file' => 'File',
+            'field_separator' => 'Field Separator',
+        ];
+    }
+
+    /**
+     * Process data before validation
+     */
+    public function preValidationProcess(mixed $data): mixed
+    {
+        // Example: Convert field separator to a standard format
+        if (isset($data['field_separator'])) {
+            $data['field_separator'] = str_replace([';', ','], ',', $data['field_separator']);
+        }
+
+        return $data;
+    }
+
+
+}
+```
+
+#### Example with Custom Rule:
+You can also use custom validation rules by implementing the ValidationRule interface. For example, to validate allowed field separators.
+
+```php
+<?php
+
+namespace Webkul\Example\Rules;
+
+use Closure;
+use Illuminate\Contracts\Validation\ValidationRule;
+
+class SeparatorTypes implements ValidationRule
+{
+    const SEPERATOR_TYPES = [',', ';', '|'];
+
+    public function validate(string $attribute, mixed $value, Closure $fail): void
+    {
+        if (! in_array($value, self::SEPERATOR_TYPES)) {
+            $fail('core::validation.seperator-not-supported')->translate();
+        }
+    }
+}
+```
+- **`validate()`**: Main method to trigger validation. Throws ValidationException if data is invalid.
+- **`getRules()`**: Returns the validation rules. Extend this in child classes to add custom rules.
+- **`getMessages()`**: Adds custom error messages. You can override this to add/merge messages.
+- **`getAttributeNames()`**: Maps technical keys to human-readable names in error messages.
+- **`preValidationProcess()`**: Use this if you need to modify the data before validation.
+
+####  Filter Fields for Exporters
+
+Filters allow users to customize export behavior by offering configurable options. All filters should be defined inside the `filters['fields']` array. These will automatically appear in the UnoPim admin panel under:
+
+> **Data Transfer > Export > Create Export**
+
+Below are examples of supported filter types — **add each one inside the `fields` array as shown**:
+
+
+- **Boolean**: A toggle switch to enable or disable the feature.
+ ```php
+
+ 'filters' => [
+    'fields' => [
+        [
+            'name'       => 'is_active',
+            'title'      => 'data_transfer::app.exporters.products.is_active',
+            'type'       => 'boolean',
+            'required'   => false,
+        ],
+    ],
+],
+```
+- **Select**: A dropdown menu to choose one option from a list.
+```php
+'filters' => [
+    'fields' => [
+        [
+            'name'       => 'file_format',
+            'title'      => 'data_transfer::app.exporters.products.file_format',
+            'type'       => 'select',
+            'required'   => true,
+            'validation' => 'required',
+            'options'    => [
+                [
+                    'value' => 'csv',
+                    'label' => 'CSV',
+                ],
+                [
+                    'value' => 'xlsx',
+                    'label' => 'XLSX',
+                ],
+            ],
+        ],
+    ],
+],
+```
+- **Multiselect**: A dropdown menu allowing multiple selections.
+```php
+'filters' => [
+    'fields' => [
+        [
+            'name'       => 'categories',
+            'title'      => 'data_transfer::app.exporters.products.categories',
+            'type'       => 'multiselect',
+            'required'   => true,
+            'validation' => 'required',
+            'options'    => [
+                [
+                    'value' => 1,
+                    'label' => 'Electronics',
+                ],
+                [
+                    'value' => 2,
+                    'label' => 'Books',
+                ],
+            ],
+        ],
+    ],
+],
+```
+- **Date**: A date picker for selecting a specific date.
+```php
+'filters' => [
+    'fields' => [
+        [
+            'name'       => 'start_date',
+            'title'      => 'data_transfer::app.exporters.products.start_date',
+            'type'       => 'date',
+            'required'   => true,
+            'validation' => 'required|date',
+        ],
+    ],
+],
+```
+- **Datetime**: A date and time picker for selecting a specific date and time.
+```php
+'filters' => [
+    'fields' => [
+        [
+            'name'       => 'export_time',
+            'title'      => 'data_transfer::app.exporters.products.export_time',
+            'type'       => 'datetime',
+            'required'   => true,
+            'validation' => 'required|date',
+        ],
+    ],
+],
+```
+- **Textarea**: A larger text input for multi-line text.
+```php
+'filters' => [
+    'fields' => [
+        [
+            'name'       => 'comments',
+            'title'      => 'data_transfer::app.exporters.products.comments',
+            'type'       => 'textarea',
+            'required'   => false,
+        ],
+    ],
+],
+```
 
 ### Step 3: Load the Configuration in the Service Provider
 
