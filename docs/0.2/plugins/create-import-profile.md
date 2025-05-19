@@ -300,29 +300,7 @@ class ProductJobValidator extends JobValidator
 
 }
 ```
-#### Example with Custom Rule:
-You can also use custom validation rules by implementing the ValidationRule interface. For example, to validate allowed field separators.
 
-```php
-<?php
-
-namespace Webkul\Example\Rules;
-
-use Closure;
-use Illuminate\Contracts\Validation\ValidationRule;
-
-class SeparatorTypes implements ValidationRule
-{
-    const SEPERATOR_TYPES = [',', ';', '|'];
-
-    public function validate(string $attribute, mixed $value, Closure $fail): void
-    {
-        if (! in_array($value, self::SEPERATOR_TYPES)) {
-            $fail('core::validation.seperator-not-supported')->translate();
-        }
-    }
-}
-```
 - **`validate()`**: Main method to trigger validation. Throws ValidationException if data is invalid.
 - **`getRules()`**: Returns the validation rules. Extend this in child classes to add custom rules.
 - **`getAttributeNames()`**: Maps technical keys to human-readable names in error messages.
@@ -330,7 +308,7 @@ class SeparatorTypes implements ValidationRule
 - **`preValidationProcess()`**: Use this if you need to modify the data before validation.
 
 
-##### Filter Fields for Import
+#### Filters for Import
 Filters allow users to customize import behavior by offering configurable options. All filters should be defined inside the `filters['fields']` array. These will automatically appear in the UnoPim admin panel under:
 
 > **Data Transfer > Import > Create Import**

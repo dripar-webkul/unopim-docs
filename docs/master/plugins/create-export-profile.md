@@ -161,7 +161,7 @@ Explanation:
 - **`filters`**: Configuration options for the exporter, such as file format and other export options.
 - **`validator`**: The validator class that will validate the export job.
 
-####   Validator for Exporter
+####  Validator for Exporter
 The validator class is responsible for validating the data before the export process begins. You can create a custom validator class in your plugin's `Validators` directory.
 
 * **Extending the Base Validator**:
@@ -248,36 +248,13 @@ class ProductJobValidator extends JobValidator
 }
 ```
 
-#### Example with Custom Rule:
-You can also use custom validation rules by implementing the ValidationRule interface. For example, to validate allowed field separators.
-
-```php
-<?php
-
-namespace Webkul\Example\Rules;
-
-use Closure;
-use Illuminate\Contracts\Validation\ValidationRule;
-
-class SeparatorTypes implements ValidationRule
-{
-    const SEPERATOR_TYPES = [',', ';', '|'];
-
-    public function validate(string $attribute, mixed $value, Closure $fail): void
-    {
-        if (! in_array($value, self::SEPERATOR_TYPES)) {
-            $fail('core::validation.seperator-not-supported')->translate();
-        }
-    }
-}
-```
 - **`validate()`**: Main method to trigger validation. Throws ValidationException if data is invalid.
 - **`getRules()`**: Returns the validation rules. Extend this in child classes to add custom rules.
 - **`getMessages()`**: Adds custom error messages. You can override this to add/merge messages.
 - **`getAttributeNames()`**: Maps technical keys to human-readable names in error messages.
 - **`preValidationProcess()`**: Use this if you need to modify the data before validation.
 
-####  Filter Fields for Exporters
+####  Filters for Exporters
 
 Filters allow users to customize export behavior by offering configurable options. All filters should be defined inside the `filters['fields']` array. These will automatically appear in the UnoPim admin panel under:
 
@@ -348,6 +325,27 @@ Below are examples of supported filter types — **add each one inside the `fiel
     ],
 ],
 ```
+- **Async-Select**: A dynamic dropdown that loads options asynchronously via API.
+```php
+'filters' => [
+    'fields' => [
+        [
+            'name'       => 'channel',
+            'title'      => 'Channel',
+            'type'       => 'select',
+            'required'   => true,
+            'validation' => 'required',
+            'async'      => true,
+            'track_by'   => 'id',      // Field to use as value
+            'label_by'   => 'label',   // Field to display as label
+            'list_route' => 'admin.channel.fetch-all', // Route name for fetching options
+        ],
+    ],
+],
+```
+
+> **Note**: When using async-select, make sure the specified `list_route` exists in your application and returns data in the expected format with the defined `track_by` and `label_by` fields.
+
 - **Date**: A date picker for selecting a specific date.
 ```php
 'filters' => [

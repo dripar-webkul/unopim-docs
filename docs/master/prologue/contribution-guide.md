@@ -18,7 +18,7 @@ You can contribute to the following projects:
 
 - [UnoPim](https://github.com/unopim/unopim)
 - [UnoPim docs](https://github.com/unopim/unopim-docs)
-- [Bagisto REST API](https://github.com/unopim/bagisto-rest-api)
+- [UnoPim REST API](https://github.com/unopim/bagisto-rest-api)
 - [UnoPim-Bagisto Connector](https://github.com/unopim/bagisto-connector)
 - [UnoPim Shopify Connector](https://github.com/unopim/shopify-connector)
 - [UnoPim Digital Asset Management (DAM)](https://github.com/unopim/unopim-digital-asset-management)

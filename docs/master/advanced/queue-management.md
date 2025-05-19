@@ -45,16 +45,6 @@ php artisan queue:restart
 php artisan queue:stop
 ```
 
-::: tip Monitor Running Jobs
-View active queue processes:
-```bash
-# List running queue workers
-ps aux | grep queue:work
-
-# Monitor job processing
-tail -f storage/logs/laravel.log | grep "Processing Job"
-```
-:::
 
 ## Scheduling Jobs with Cron
 

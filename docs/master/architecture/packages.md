@@ -107,6 +107,10 @@ The **DataTransfer** package manages data imports and exports, facilitating bulk
 
 The **DebugBar** package includes essential tools for monitoring, analyzing, and debugging the UnoPim platform, ensuring optimal performance during development and troubleshooting.
 
+### ElasticSearch
+
+The **ElasticSearch** package integrates ElasticSearch functionalities into UnoPim, enabling advanced search capabilities and data indexing. It allows for efficient querying and retrieval of product information, enhancing the overall search experience.
+
 ### FPC
 
 The **FPC (Full Page Cache)** package optimizes the platform’s performance by caching generated pages, reducing server load, and improving response times for administrators.

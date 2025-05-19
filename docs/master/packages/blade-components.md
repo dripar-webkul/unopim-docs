@@ -225,8 +225,8 @@ The `async select` component provides dynamic loading of attributes with paginat
 | **`label-by`** | `String`  | `'label'`| Field to display in the select                              |
 | **`list-route`**| `String` | `null`  | Route for fetching options data                              |
 | **`entityName`**| `Json`   | `null`  | Filter options by entity type or validation                   |
-| **`value`**    | `Mixed`   | `null`  | Pre-selected value for the select control                    |
-
+| **`value`**    | `Mixed`   | `null`  | Pre-selected value that should match with track-by field                     |
+| **`query`** | `String` | `null` | Parameter name used when sending search queries to the server |
 
 
 #### Route Configuration
@@ -240,6 +240,7 @@ Route::get('options/async', [AjaxOptionsController::class, 'getOptions'])
 
 
 #### Controller Implementation
+Assume you have a controller named `AjaxOptionsController` that handles the request for fetching options. Below is an example of how to implement the `getOptions` method in your controller:
 
 ```php
 <?php
@@ -281,10 +282,12 @@ class AjaxOptionsController extends Controller
                 : $repository->whereIn('type', $entityName);
         }
 
+        // Handle Search Query
         if (! empty($query)) {
             $repository = $repository->where('code', 'LIKE', '%' . $query . '%');
         }
 
+        // Handle Pagination
         $attributes = $repository->orderBy('id')
             ->paginate(self::DEFAULT_PER_PAGE);
 
@@ -315,6 +318,34 @@ class AjaxOptionsController extends Controller
 Example with all available props:
 
 ```html
+@php
+// For example, let's assume you have a list of attributes saved in the database for the select component
+$attributes = [
+    [
+        'id' => '1',
+        'code' => 'default',
+        'label' => 'Default',
+        'name' => 'Default'
+    ],
+    [
+        'id' => 'custom',
+        'code' => 'custom',
+        'label' => 'Custom',
+        'name' => 'Custom'
+    ]
+];
+
+// Format the saved values for the select component.
+$options = [];
+foreach ($attributes as $attribute) {
+    $options[] = [
+        'id' => $attribute['code'],
+        'label' => $attribute['name']
+    ];
+}
+
+$optionsJson = json_encode($options);
+@endphp
 <x-admin::form.control-group>
     <x-admin::form.control-group.label>
         @lang('admin::app.catalog.attributes.index.title')
@@ -325,7 +356,7 @@ Example with all available props:
         type="select"
         name="attributes"
         rules="required"
-        :value="$value"
+        :value="old('attributes') ?? $optionsJson"
         :label="trans('admin::app.catalog.attributes.index.title')"
         track-by="id"
         label-by="label"
@@ -339,6 +370,7 @@ Example with all available props:
     />
 </x-admin::form.control-group>
 ```
+> **Note:** The `$optionsJson` variable is used to pass the options to the select component. You can replace it with your own logic to fetch options from the database or any other source , use only if you want to pre-select the options.
 
 ### Tagging
 

@@ -225,8 +225,8 @@ The `async select` component provides dynamic loading of attributes with paginat
 | **`label-by`** | `String`  | `'label'`| Field to display in the select                              |
 | **`list-route`**| `String` | `null`  | Route for fetching options data                              |
 | **`entityName`**| `Json`   | `null`  | Filter options by entity type or validation                   |
-| **`value`**    | `Mixed`   | `null`  | Pre-selected value for the select control                    |
-
+| **`value`**    | `Mixed`   | `null`  | Pre-selected value that should match with track-by field                     |
+| **`query`** | `String` | `null` | Parameter name used when sending search queries to the server |
 
 
 #### Route Configuration
@@ -240,6 +240,7 @@ Route::get('options/async', [AjaxOptionsController::class, 'getOptions'])
 
 
 #### Controller Implementation
+Assume you have a controller named `AjaxOptionsController` that handles the request for fetching options. Below is an example of how to implement the `getOptions` method in your controller:
 
 ```php
 <?php
@@ -281,10 +282,12 @@ class AjaxOptionsController extends Controller
                 : $repository->whereIn('type', $entityName);
         }
 
+        // Handle Search Query
         if (! empty($query)) {
             $repository = $repository->where('code', 'LIKE', '%' . $query . '%');
         }
 
+        // Handle Pagination
         $attributes = $repository->orderBy('id')
             ->paginate(self::DEFAULT_PER_PAGE);
 
@@ -315,6 +318,34 @@ class AjaxOptionsController extends Controller
 Example with all available props:
 
 ```html
+@php
+// For example, let's assume you have a list of attributes saved in the database for the select component
+$attributes = [
+    [
+        'id' => '1',
+        'code' => 'default',
+        'label' => 'Default',
+        'name' => 'Default'
+    ],
+    [
+        'id' => 'custom',
+        'code' => 'custom',
+        'label' => 'Custom',
+        'name' => 'Custom'
+    ]
+];
+
+// Format the saved values for the select component.
+$options = [];
+foreach ($attributes as $attribute) {
+    $options[] = [
+        'id' => $attribute['code'],
+        'label' => $attribute['name']
+    ];
+}
+
+$optionsJson = json_encode($options);
+@endphp
 <x-admin::form.control-group>
     <x-admin::form.control-group.label>
         @lang('admin::app.catalog.attributes.index.title')
@@ -325,7 +356,7 @@ Example with all available props:
         type="select"
         name="attributes"
         rules="required"
-        :value="$value"
+        :value="old('attributes') ?? $optionsJson"
         :label="trans('admin::app.catalog.attributes.index.title')"
         track-by="id"
         label-by="label"
@@ -339,30 +370,7 @@ Example with all available props:
     />
 </x-admin::form.control-group>
 ```
-#### Features
-
-* **Dynamic Option Loading**:
-   * Asynchronous loading of options via AJAX
-   - Built-in pagination support with customizable page size
-   - Real-time search functionality
-   - Configurable page size (default: 20 items per page)
-
-* **Filtering Capabilities**:
-   - Entity type filtering using `entityName` parameter
-   - Support for validation types (e.g., 'number', 'text', etc.)
-   - Custom attribute filtering options
-   - Server-side search using LIKE on attribute code
-
-* **Value Handling**:
-   - Pre-selected value support via `:value` prop
-   - Built-in error handling and validation
-   - Customizable `track-by` and `label-by` fields for flexible data mapping
-
-* **Translation Support**:
-   - Automatic label translation using Laravel's translation system
-   - Locale-based content rendering
-   - Fallback handling for missing translations
-   - Support for multiple locales
+> **Note:** The `$optionsJson` variable is used to pass the options to the select component. You can replace it with your own logic to fetch options from the database or any other source , use only if you want to pre-select the options.
 
 ### Tagging
 
@@ -411,25 +419,6 @@ Let's assume you want to use the **`tagging`** component. You can call it like t
     />
 </x-admin::form.control-group>
 ```
-
-#### Features
-
-* **Dual Functionality:**
-  * Select tags from dropdown or add new by typing + Enter
-  * Remove tags with × button
-  * Real-time tag addition and removal
-
-* **Tag Management:**
-  * Add new tags through text input
-  * Select existing tags from dropdown
-  * Remove selected tags easily
-  * Visual feedback for selected tags
-
-* **Customization Options:**
-  * Custom tracking `track-by` and display `label-by` fields
-  * Configurable placeholder text
-
-The Tagging component integrates seamlessly with UnoPim's form controls while providing flexible tag management capabilities. It supports both selection from existing tags and creation of new tags through direct input.
 
 ### Drawer
 
