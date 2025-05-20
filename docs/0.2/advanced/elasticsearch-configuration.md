@@ -25,9 +25,9 @@ ELASTICSEARCH_CLOUD_ID=
 ELASTICSEARCH_INDEX_PREFIX=unopim_testing
 ```
 
-### Environment Variables Explained
+### Environment Variables
 
-- `ELASTICSEARCH_ENABLED`: Master switch for ElasticSearch integration
+- `ELASTICSEARCH_ENABLED`: Enables or disables the Elasticsearch functionality
   - Values: `true`/`false`
   - Default: `false`
   - Purpose: Controls whether ElasticSearch functionality is active

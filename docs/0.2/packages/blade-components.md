@@ -215,8 +215,7 @@ Let's assume you want to use the **`Multi Select`** component. You can call it l
 
 ### Async Select
 
-The `async select` component provides dynamic loading of attributes with pagination and search functionality.
-
+The `async select` component provides dynamic loading of attributes with pagination and search functionality. It includes advanced features for handling saved values and searching identifiers.
 
 | Props           | Type      | Default | Description                                                   |
 |----------------|-----------|---------|---------------------------------------------------------------|
@@ -225,7 +224,7 @@ The `async select` component provides dynamic loading of attributes with paginat
 | **`label-by`** | `String`  | `'label'`| Field to display in the select                              |
 | **`list-route`**| `String` | `null`  | Route for fetching options data                              |
 | **`entityName`**| `Json`   | `null`  | Filter options by entity type or validation                   |
-| **`value`**    | `Mixed`   | `null`  | Pre-selected value that should match with track-by field                     |
+| **`value`**    | `Mixed`   | `null`  | Pre-selected value that should match with track-by field     |
 | **`query`** | `String` | `null` | Parameter name used when sending search queries to the server |
 
 
@@ -238,9 +237,8 @@ Route::get('options/async', [AjaxOptionsController::class, 'getOptions'])
     ->name('admin.example.options.async');
 ```
 
-
 #### Controller Implementation
-Assume you have a controller named `AjaxOptionsController` that handles the request for fetching options. Below is an example of how to implement the `getOptions` method in your controller:
+Here's a complete example of the controller with searchIdentifiers support:
 
 ```php
 <?php
@@ -253,25 +251,18 @@ use Webkul\Attribute\Repositories\AttributeRepository;
 
 class AjaxOptionsController extends Controller
 {
-    /**
-     * Default number of items per page.
-     */
     const DEFAULT_PER_PAGE = 20;
 
     public function __construct(
         protected AttributeRepository $attributeRepository
     ) {}
 
-    /**
-     * Get options for the select control.
-     *
-     * @return JsonResponse
-     */
     public function getOptions(): JsonResponse
     {
         $entityName = request()->get('entityName');
         $page = request()->get('page');
         $query = request()->get('query', '');
+        $queryParams = request()->except(['page', 'query', 'entityName']);
 
         $repository = $this->attributeRepository;
 
@@ -285,6 +276,20 @@ class AjaxOptionsController extends Controller
         // Handle Search Query
         if (! empty($query)) {
             $repository = $repository->where('code', 'LIKE', '%' . $query . '%');
+        }
+
+        // Handle searchIdentifiers for saved values
+        $searchIdentifiers = isset($queryParams['identifiers']['columnName'])
+            ? $queryParams['identifiers']
+            : [];
+
+        if (! empty($searchIdentifiers)) {
+            $repository = $repository->whereIn(
+                $searchIdentifiers['columnName'],
+                is_array($searchIdentifiers['values'])
+                    ? $searchIdentifiers['values']
+                    : [$searchIdentifiers['values']]
+            );
         }
 
         // Handle Pagination
@@ -313,39 +318,75 @@ class AjaxOptionsController extends Controller
     }
 }
 ```
+#### Handling Saved Values
+When working with saved values where only codes are stored (instead of complete objects), the component uses searchIdentifiers to fetch and display the correct labels:
 
-#### Component Usage
-Example with all available props:
-
+1. Single Value Example:
 ```html
 @php
-// For example, let's assume you have a list of attributes saved in the database for the select component
-$attributes = [
-    [
-        'id' => '1',
-        'code' => 'default',
-        'label' => 'Default',
-        'name' => 'Default'
-    ],
-    [
-        'id' => 'custom',
-        'code' => 'custom',
-        'label' => 'Custom',
-        'name' => 'Custom'
-    ]
-];
-
-// Format the saved values for the select component.
-$options = [];
-foreach ($attributes as $attribute) {
-    $options[] = [
-        'id' => $attribute['code'],
-        'label' => $attribute['name']
+    $searchIdentifiers = [
+        'columnName' => 'code', // or whatever column you're tracking by
+        'values' => 'size' // single value
     ];
-}
-
-$optionsJson = json_encode($options);
 @endphp
+
+<x-admin::form.control-group.control
+    type="select"
+    name="attribute_code"
+    :value="$searchIdentifiers['values']"
+    track-by="code"
+    label-by="label"
+    :list-route="route('admin.example.options.async')"
+    async=true
+/>
+```
+
+2. Multiple Values Example:
+```html
+@php
+    $searchIdentifiers = [
+        'columnName' => 'code',
+        'values' => ['size', 'color'] // array of values
+    ];
+@endphp
+
+<x-admin::form.control-group.control
+    type="multiselect"
+    name="attribute_codes"
+    :value="$searchIdentifiers['values']"
+    track-by="code"
+    label-by="label"
+    :list-route="route('admin.example.options.async')"
+    async=true
+/>
+```
+#### Component Usage
+Example with pre-selected values:
+
+```html
+<!-- Basic usage with single value -->
+<x-admin::form.control-group.control
+    type="select"
+    name="attribute"
+    :value="$savedCode" <!-- Pass just the code -->
+    track-by="code"
+    label-by="label"
+    :list-route="route('admin.example.options.async')"
+    async=true
+/>
+
+<!-- Usage with multiple values -->
+<x-admin::form.control-group.control
+    type="multiselect"
+    name="attributes"
+    :value="$savedCodes" <!-- Pass array of codes -->
+    track-by="code"
+    label-by="label"
+    :list-route="route('admin.example.options.async')"
+    async=true
+/>
+
+<!-- Complete example with all props -->
 <x-admin::form.control-group>
     <x-admin::form.control-group.label>
         @lang('admin::app.catalog.attributes.index.title')
@@ -356,9 +397,8 @@ $optionsJson = json_encode($options);
         type="select"
         name="attributes"
         rules="required"
-        :value="old('attributes') ?? $optionsJson"
-        :label="trans('admin::app.catalog.attributes.index.title')"
-        track-by="id"
+        :value="$savedCode"
+        track-by="code"
         label-by="label"
         :entityName="json_encode(['text'])"
         :list-route="route('admin.example.options.async')"
@@ -370,7 +410,13 @@ $optionsJson = json_encode($options);
     />
 </x-admin::form.control-group>
 ```
-> **Note:** The `$optionsJson` variable is used to pass the options to the select component. You can replace it with your own logic to fetch options from the database or any other source , use only if you want to pre-select the options.
+
+> **Note:** When passing only codes as values, the component automatically:
+> 1. Sends the codes to the controller using searchIdentifiers
+> 2. Fetches the complete option data including labels
+> 3. Displays the proper labels in the select field
+>
+> This works for both single select and multiselect components.
 
 ### Tagging
 
@@ -394,13 +440,13 @@ Let's assume you want to use the **`tagging`** component. You can call it like t
         Tags
     </x-admin::form.control-group.label>
     @php
-    // Example data for existing tags
+        // Example data for existing tags
         $existingTags = [
             ['id' => 1, 'name' => 'Tag 1'],
             ['id' => 2, 'name' => 'Tag 2'],
             ['id' => 3, 'name' => 'Tag 3'],
         ];
-    // Example data for selected tags
+        // Example data for selected tags
         $selectedTags = [1, 2];
     @endphp
 

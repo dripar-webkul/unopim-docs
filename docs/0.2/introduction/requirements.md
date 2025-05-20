@@ -42,10 +42,10 @@ Ensure the following extensions are installed and enabled. You can check using t
 
 ### On Windows
 
-1. **Locate the `php.ini` file**: 
+1. **Locate the `php.ini` file**:
    - This file is typically located in your PHP installation directory (e.g., `C:\php\php.ini` or `C:\xampp\php\php.ini`).
 
-2. **Enable the extensions**: 
+2. **Enable the extensions**:
    - Open the `php.ini` file in a text editor and find the extensions listed below.
    - Uncomment the lines by removing the `;` at the beginning. If the extension is not listed, you'll need to download the corresponding `.dll` file.
 
@@ -107,6 +107,55 @@ Ensure the following extensions are installed and enabled. You can check using t
    ```bash
    php -m
    ```
+
+### On macOS
+
+1. **Install PHP Extensions via Homebrew**:
+   ```bash
+   brew install php
+   brew install php-curl
+   brew install php-gd
+   brew install php-intl
+   brew install php-mbstring
+   brew install php-openssl
+   brew install php-pdo
+   brew install php-zip
+   ```
+
+2. **Verify PHP Version and Extensions**:
+   ```bash
+   # Check PHP version
+   php -v
+
+   # List installed PHP extensions
+   php -m
+   ```
+
+3. **Configure PHP Extensions**:
+   - Locate your `php.ini` file:
+   ```bash
+   php --ini
+   ```
+
+   - Edit the `php.ini` file to enable extensions:
+   ```ini
+   extension=curl
+   extension=fileinfo
+   extension=gd
+   extension=intl
+   extension=mbstring
+   extension=openssl
+   extension=pdo
+   extension=pdo_mysql
+   extension=tokenizer
+   extension=zip
+   ```
+
+4. **Restart PHP-FPM** (if using):
+   ```bash
+   brew services restart php
+   ```
+
 
 ## PHP Configuration
 

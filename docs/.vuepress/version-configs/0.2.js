@@ -18,7 +18,8 @@ module.exports = [{
         path: setVersionPrefix('prologue'),
         collapsable: true,
         children: setVersionPrefix([
-            ['prologue/contribution-guide', ' Contribution Guide'],
+            ['prologue/upgrade-guide', 'Upgrade Guide'],
+            ['prologue/contribution-guide', 'Contribution Guide'],
         ])
     },
     {
