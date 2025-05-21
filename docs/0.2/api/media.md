@@ -32,20 +32,18 @@ Use the [Common Headers](#common-headers).
 | `file`      | The media file to be uploaded.       | File   |
 | `sku`       | Product SKU to associate the file    | String |
 | `attribute` | Media attribute (e.g., `image`)      | String |
-| `channel`   | The applicable channel (e.g., `default`) | String |
-| `locale`    | (Optional) Locale for the media file | String |
 
-### Example Request
+### Example Request (Key-Value Format)
 
-```json
-{
-  "file": "/home/users/deepak.kumar/Downloads/Image/bag.jpg",
-  "sku": "1111111304",
-  "attribute": "image",
-  "channel": "default",
-  "locale": null
-}
-```
+**Form Fields:**
+
+| Key         | Value                      |
+| ----------- | -------------------------- |
+| `file`      | *(Select file)*            |
+| `sku`       | `1111111304`               |
+| `attribute` | `image`                    |
+
+
 > 🔔 **Note:**
 > The `"file"` field here represents the local file path on your system for illustrative purposes. In a real API call, the file is uploaded via `multipart/form-data`, not as JSON.
 
@@ -84,20 +82,17 @@ Use the [Common Headers](#common-headers).
 | `file`          | The media file to be uploaded.       | File   |
 | `code`          | Category code to associate the file  | String |
 | `category_field`| Media attribute (e.g., `image`)      | String |
-| `scope`         | The applicable channel (e.g., `default`) | String |
-| `locale`        | (Optional) Locale for the media file | String |
 
-### Example Request
 
-```json
-{
-  "file": "/home/users/deepak.kumar/Downloads/Image/bag.jpg",
-  "code": "electronic3",
-  "category_field": "file",
-  "scope": "null",
-  "locale": "null"
-}
-```
+
+### Example Request (Key-Value Format)
+
+| Key              | Value                                                            |
+| ---------------- | ---------------------------------------------------------------- |
+| `file`           | *(Select file)*                                                  |
+| `code`           | `electronic3`                                                    |
+| `category_field` | `file`                                                           |
+
 > 🔔 **Note:**
 > The `"file"` field here represents the local file path on your system for illustrative purposes. In a real API call, the file is uploaded via `multipart/form-data`, not as JSON.
 

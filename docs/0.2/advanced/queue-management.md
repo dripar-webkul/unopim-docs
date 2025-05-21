@@ -45,7 +45,6 @@ php artisan queue:restart
 php artisan queue:stop
 ```
 
-
 ## Scheduling Jobs with Cron
 
 ### Basic Setup
@@ -59,15 +58,6 @@ crontab -e
 * * * * * cd /path/to/unopim && php artisan schedule:run >> /var/log/unopim/scheduler.log 2>&1
 ```
 
-### Import/Export Job Examples
-
-```bash
-# Run import job hourly with specific user
-0 * * * * cd /var/www/unopim && php artisan unopim:queue:work 1 system@unopim.com --queue=hourly-import
-
-# Run export job daily at 2 AM
-0 2 * * * cd /var/www/unopim && php artisan unopim:queue:work 2 system@unopim.com --queue=daily-export
-```
 
 ::: warning Important Notes
 1. Always provide valid job ID and user email
