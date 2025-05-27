@@ -17,7 +17,7 @@ Add the following settings to your `.env` file:
 ```env
 ELASTICSEARCH_ENABLED=true
 ELASTICSEARCH_CONNECTION=default
-ELASTICSEARCH_HOST=192.168.1.43:9200
+ELASTICSEARCH_HOST=localhost:9200
 ELASTICSEARCH_USER=
 ELASTICSEARCH_PASS=
 ELASTICSEARCH_API_KEY=
@@ -41,7 +41,7 @@ ELASTICSEARCH_INDEX_PREFIX=unopim_testing
 - `ELASTICSEARCH_HOST`: ElasticSearch server location
   - Format: `hostname:port`
   - Default: `localhost:9200`
-  - Example: `192.168.1.43:9200` or `elastic.example.com:9200`
+  - Example: `localhost:9200` or `elastic.example.com:9200`
 
 - `ELASTICSEARCH_USER` & `ELASTICSEARCH_PASS`: Basic authentication credentials
   - Optional: Required only when using username/password authentication

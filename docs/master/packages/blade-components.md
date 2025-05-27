@@ -324,40 +324,36 @@ When working with saved values where only codes are stored (instead of complete 
 1. Single Value Example:
 ```html
 @php
-    $searchIdentifiers = [
-        'columnName' => 'code', // or whatever column you're tracking by
-        'values' => 'size' // single value
-    ];
+
+$value = "size"
 @endphp
 
 <x-admin::form.control-group.control
-    type="select"
-    name="attribute_code"
-    :value="$searchIdentifiers['values']"
-    track-by="code"
-    label-by="label"
-    :list-route="route('admin.example.options.async')"
-    async=true
+type="select"
+name="attribute_code"
+:value="$value"
+track-by="code"
+label-by="label"
+:list-route="route('admin.example.options.async')"
+async=true
 />
 ```
 
 2. Multiple Values Example:
 ```html
 @php
-    $searchIdentifiers = [
-        'columnName' => 'code',
-        'values' => ['size', 'color'] // array of values
-    ];
+
+$value = "size,color,time"
 @endphp
 
 <x-admin::form.control-group.control
-    type="multiselect"
-    name="attribute_codes"
-    :value="$searchIdentifiers['values']"
-    track-by="code"
-    label-by="label"
-    :list-route="route('admin.example.options.async')"
-    async=true
+type="select"
+name="attribute_code"
+:value="$value"
+track-by="code"
+label-by="label"
+:list-route="route('admin.example.options.async')"
+async=true
 />
 ```
 #### Component Usage

@@ -18,7 +18,7 @@ php artisan unopim:queue:work 1 admin@example.com --queue=custom-queue --timeout
 
 Required parameters:
 - `job_id`: ID of the import/export job (required)
-- `user_email`: Email of the user who created the job (required)
+- `user_email`: The email of the unopim user executing the job (required)
 
 Optional parameters:
 - `--queue`: Specify custom queue name
@@ -57,7 +57,14 @@ crontab -e
 ```bash
 * * * * * cd /path/to/unopim && php artisan schedule:run >> /var/log/unopim/scheduler.log 2>&1
 ```
+### Scheduling a Single Job
 
+To schedule a specific import/export job, add a cron entry that runs the `unopim:queue:work` command directly:
+- Assuming the job ID is 1 and the user email is admin@example.com (replace with your values), schedule it to run every hour.
+
+```bash
+0 * * * * cd /path/to/unopim && php artisan unopim:queue:work 1 admin@example.com >> /var/log/unopim/job-1.log 2>&1
+```
 
 ::: warning Important Notes
 1. Always provide valid job ID and user email

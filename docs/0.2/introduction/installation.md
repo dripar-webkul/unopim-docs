@@ -129,7 +129,7 @@ To install UnoPim using our GUI installer, you can follow any of the following m
 ::: warning Important Prerequisites
 Make sure your system meets these requirements:
 - Composer is installed on your system
-- PHP >= 8.1
+- PHP >= 8.2
 - Required PHP extensions are enabled
 - Proper directory permissions are set
 :::
