@@ -59,6 +59,34 @@ In your plugin's `routes.php` file, define the named route used in `menu.php` as
 ```php
 Route::get('/example', [ExampleController::class, 'index'])->name('example.menu.index');
 ```
+### 4. **Merge Configuration**
+
+After defining your menu items and routes, you need to merge your menu configuration with UnoPim's core menu configuration. Add the following to your plugin's service provider:
+
+```php
+<?php
+
+namespace Webkul\Example\Providers;
+
+use Illuminate\Support\ServiceProvider;
+
+class ExampleServiceProvider extends ServiceProvider
+{
+    /**
+     * Register services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->mergeConfigFrom(
+            dirname(__DIR__) . '/Config/menu.php', 'menu.admin'
+        );
+    }
+}
+```
+
+This step is crucial as it integrates your custom menu items into UnoPim's admin panel menu structure.
 
 ## Loading and Setting the Side Menu Icon
 
@@ -78,15 +106,15 @@ UnoPim allows developers to add custom icons to their side menu items. Icons can
 - In your plugin's `app.css` or another custom CSS file, define the font and the class for your custom icon:
 
 ```css
-@font-face { 
-  font-family: "unopim-admin"; 
-  src: url("../fonts/example.woff") format("woff"); 
-  font-weight: normal; 
-  font-style: normal; 
-  font-display: block; 
+@font-face {
+  font-family: "unopim-admin";
+  src: url("../fonts/example.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
 }
 
-.icon-example:before { 
+.icon-example:before {
   content: "\e900"; /* Custom Unicode for the icon */
 }
 ```
@@ -101,13 +129,13 @@ UnoPim allows developers to add custom icons to their side menu items. Icons can
 ```
 
 #### Step 5: **Load the CSS in the Service Provider**
-- Use the `unopim.admin.layout.head` event in your `ExampleServiceProvider` to load the custom CSS in the main admin layout:
+- Use the `unopim.admin.layout.head.before` event in your `ExampleServiceProvider` to load the custom CSS in the main admin layout:
 
 ```php
 public function boot()
 {
     $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'example');
-    Event::listen('unopim.admin.layout.head', function($viewRenderEventManager) {
+    Event::listen('unopim.admin.layout.head.before', function($viewRenderEventManager) {
         $viewRenderEventManager->addTemplate('example::style');
     });
 }
@@ -149,13 +177,13 @@ public function boot()
 ```
 
 #### Step 4: **Load the CSS in the Service Provider**
-- Use the same method as above to load the CSS via the `unopim.admin.layout.head` event in your `ExampleServiceProvider`:
+- Use the same method as above to load the CSS via the `unopim.admin.layout.head.before` event in your `ExampleServiceProvider`:
 
 ```php
 public function boot()
 {
     $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'example');
-    Event::listen('unopim.admin.layout.head', function($viewRenderEventManager) {
+    Event::listen('unopim.admin.layout.head.before', function($viewRenderEventManager) {
         $viewRenderEventManager->addTemplate('example::style');
     });
 }

@@ -33,8 +33,8 @@ Let's assume you want to use the **`accordion`** component, you can call it like
 
 ```html
 <!-- Accordion -->
-<x-admin::accordion 
-    title="Accordion" 
+<x-admin::accordion
+    title="Accordion"
     class="px-5"
 >
     <x-slot:header class="bg-gray-200">
@@ -213,6 +213,255 @@ Let's assume you want to use the **`Multi Select`** component. You can call it l
 </x-admin::form.control-group>
 ```
 
+### Async Select
+
+The `async select` component provides dynamic loading of attributes with pagination and search functionality. It includes advanced features for handling saved values and searching identifiers.
+
+| Props           | Type      | Default | Description                                                   |
+|----------------|-----------|---------|---------------------------------------------------------------|
+| **`async`**    | `Boolean` | `false` | Enables async loading of options                              |
+| **`track-by`** | `String`  | `'code'`  | Field to use as option value                                 |
+| **`label-by`** | `String`  | `'label'`| Field to display in the select                              |
+| **`list-route`**| `String` | `null`  | Route for fetching options data                              |
+| **`entityName`**| `Json`   | `null`  | Filter options by entity type or validation                   |
+| **`value`**    | `Mixed`   | `null`  | Pre-selected value that should match with track-by field     |
+| **`query`** | `String` | `null` | Parameter name used when sending search queries to the server |
+
+
+#### Route Configuration
+
+First, define the `routes` for `async` options:
+
+```php
+Route::get('options/async', [AjaxOptionsController::class, 'getOptions'])
+    ->name('admin.example.options.async');
+```
+
+#### Controller Implementation
+Here's a complete example of the controller with searchIdentifiers support:
+
+```php
+<?php
+
+namespace Webkul\Example\Http\Controllers;
+
+use Illuminate\Http\JsonResponse;
+use Illuminate\Routing\Controller;
+use Webkul\Attribute\Repositories\AttributeRepository;
+
+class AjaxOptionsController extends Controller
+{
+    const DEFAULT_PER_PAGE = 20;
+
+    public function __construct(
+        protected AttributeRepository $attributeRepository
+    ) {}
+
+    public function getOptions(): JsonResponse
+    {
+        $entityName = request()->get('entityName');
+        $page = request()->get('page');
+        $query = request()->get('query', '');
+        $queryParams = request()->except(['page', 'query', 'entityName']);
+
+        $repository = $this->attributeRepository;
+
+        if (! empty($entityName)) {
+            $entityName = json_decode($entityName);
+            $repository = in_array('number', $entityName)
+                ? $repository->whereIn('validation', $entityName)
+                : $repository->whereIn('type', $entityName);
+        }
+
+        // Handle Search Query
+        if (! empty($query)) {
+            $repository = $repository->where('code', 'LIKE', '%' . $query . '%');
+        }
+
+        // Handle searchIdentifiers for saved values
+        $searchIdentifiers = isset($queryParams['identifiers']['columnName'])
+            ? $queryParams['identifiers']
+            : [];
+
+        if (! empty($searchIdentifiers)) {
+            $repository = $repository->whereIn(
+                $searchIdentifiers['columnName'],
+                is_array($searchIdentifiers['values'])
+                    ? $searchIdentifiers['values']
+                    : [$searchIdentifiers['values']]
+            );
+        }
+
+        // Handle Pagination
+        $attributes = $repository->orderBy('id')
+            ->paginate(self::DEFAULT_PER_PAGE);
+
+        $options = collect($attributes->items())->map(function ($attribute) {
+            $translatedLabel = $attribute->translate(
+                core()->getRequestedLocaleCode()
+            )?->name;
+
+            return [
+                'id'    => $attribute->id,
+                'code'  => $attribute->code,
+                'label' => ! empty($translatedLabel)
+                    ? $translatedLabel
+                    : "[{$attribute->code}]",
+            ];
+        });
+
+        return new JsonResponse([
+            'options'  => $options,
+            'page'     => $attributes->currentPage(),
+            'lastPage' => $attributes->lastPage(),
+        ]);
+    }
+}
+```
+#### Handling Saved Values
+When working with saved values where only codes are stored (instead of complete objects), the component uses searchIdentifiers to fetch and display the correct labels:
+
+1. Single Value Example:
+```html
+@php
+
+$value = "size"
+@endphp
+
+<x-admin::form.control-group.control
+type="select"
+name="attribute_code"
+:value="$value"
+track-by="code"
+label-by="label"
+:list-route="route('admin.example.options.async')"
+async=true
+/>
+```
+
+2. Multiple Values Example:
+```html
+@php
+
+$value = "size,color,time"
+@endphp
+
+<x-admin::form.control-group.control
+type="select"
+name="attribute_code"
+:value="$value"
+track-by="code"
+label-by="label"
+:list-route="route('admin.example.options.async')"
+async=true
+/>
+```
+#### Component Usage
+Example with pre-selected values:
+
+```html
+<!-- Basic usage with single value -->
+<x-admin::form.control-group.control
+    type="select"
+    name="attribute"
+    :value="$savedCode" <!-- Pass just the code -->
+    track-by="code"
+    label-by="label"
+    :list-route="route('admin.example.options.async')"
+    async=true
+/>
+
+<!-- Usage with multiple values -->
+<x-admin::form.control-group.control
+    type="multiselect"
+    name="attributes"
+    :value="$savedCodes" <!-- Pass array of codes -->
+    track-by="code"
+    label-by="label"
+    :list-route="route('admin.example.options.async')"
+    async=true
+/>
+
+<!-- Complete example with all props -->
+<x-admin::form.control-group>
+    <x-admin::form.control-group.label>
+        @lang('admin::app.catalog.attributes.index.title')
+        <span>*</span>
+    </x-admin::form.control-group.label>
+
+    <x-admin::form.control-group.control
+        type="select"
+        name="attributes"
+        rules="required"
+        :value="$savedCode"
+        track-by="code"
+        label-by="label"
+        :entityName="json_encode(['text'])"
+        :list-route="route('admin.example.options.async')"
+        async=true
+    />
+
+    <x-admin::form.control-group.error
+        control-name="attributes"
+    />
+</x-admin::form.control-group>
+```
+
+> **Note:** When passing only codes as values, the component automatically:
+> 1. Sends the codes to the controller using searchIdentifiers
+> 2. Fetches the complete option data including labels
+> 3. Displays the proper labels in the select field
+>
+> This works for both single select and multiselect components.
+
+### Tagging
+
+The Tagging component provides an interactive interface for managing tags, combining both select and input functionality. Users can select from existing tags or create new ones dynamically.
+
+| Props           | Type      | Default | Description                                                   |
+|----------------|-----------|---------|---------------------------------------------------------------|
+| **`name`**     | `String`  | `null`  | Name of the form control                                      |
+| **`options`**  | `Array`   | `[]`    | Predefined tags available for selection                       |
+| **`value`**    | `Array`   | `[]`    | Currently selected/added tags                                 |
+| **`track-by`** | `String`  | `'id'`  | Property to use as unique identifier                         |
+| **`label-by`** | `String`  | `'name'`| Property to display as tag label                             |
+
+#### Basic Usage
+Let's assume you want to use the **`tagging`** component. You can call it like this.
+
+```html
+<x-admin::form.control-group>
+  <!-- Label for the Select Element -->
+    <x-admin::form.control-group.label>
+        Tags
+    </x-admin::form.control-group.label>
+    @php
+        // Example data for existing tags
+        $existingTags = [
+            ['id' => 1, 'name' => 'Tag 1'],
+            ['id' => 2, 'name' => 'Tag 2'],
+            ['id' => 3, 'name' => 'Tag 3'],
+        ];
+        // Example data for selected tags
+        $selectedTags = [1, 2];
+    @endphp
+
+    <x-admin::form.control-group.control
+        type="tagging"
+        name="tags"
+        :options="$existingTags"
+        :value="$selectedTags"
+        track-by="id"
+        label-by="name"
+        :placeholder="'Select or add tags...'"
+    />
+
+    <x-admin::form.control-group.error
+        control-name="tags"
+    />
+</x-admin::form.control-group>
+```
+
 ### Drawer
 
 The `drawer` component in UnoPim provides a versatile drawer that can be positioned on the top, bottom, left, or right side of the screen. It allows you to create interactive drawers that can contain various content such as headers, body, and footer sections. The drawer can be toggled open or closed, providing a clean and efficient way to display additional information or functionality.
@@ -240,7 +489,7 @@ Let's assume you want to use the **`drawer`** component. You can call it like th
 
 ```html
 <!-- Drawer -->
-<x-admin::drawer     
+<x-admin::drawer
     position="left"
     width="100%"
 >
@@ -279,7 +528,7 @@ Let's assume you want to use the **`dropdown`** component. You can call it like 
 
 ```html
 <!-- Dropdown -->
-<x-admin::dropdown position="bottom-left"> 
+<x-admin::dropdown position="bottom-left">
     <x-slot:toggle>
         Dropdown Toggle
     </x-slot>
@@ -310,7 +559,7 @@ It can be configured with various props to customize its behavior according to a
 | **`value`**   | `String`         | None          | Initial value of the date picker.                                        |
 | **`allow-input`** | `Boolean`      | `true`      | Determines whether manual input is allowed in the input field.           |
 | **`disable`** | `Array`          | `[]`          | Array of dates to disable in the date picker.                            |
-                                                                                                                              
+
 Let's assume you want to use the **`flat-picker`** component. You can call it like this.
 
 ```html
@@ -340,7 +589,7 @@ Let's assume you want to use the **`datagrid`** component. You can call it like 
 <x-admin::datagrid :src="route('admin.catalog.products.index')" />
 ```
 
-### Tabs 
+### Tabs
 
 The Tabs component allows users to navigate between different content sections using tabs. It consists of two main parts: the `tabs` component for managing the tabs and the `tab-item` component for defining individual tab items.
 
@@ -356,7 +605,7 @@ The `tinymce` component wraps the Tinymce editor and provides additional functio
 | -------------- | ------- | ------------- | ---------------------------------------------------------------- |
 | **`selector`** | String  | `''`          | The CSS selector for the textarea element to initialize as TinyMCE. |
 | **`field`**    | Object  | `{}`          | Vue Formulate field object.                                      |
-| **`prompt`**   | String  | `''`          | The prompt to be used for AI content generation.                 |  
+| **`prompt`**   | String  | `''`          | The prompt to be used for AI content generation.                 |
 
 Let's assume you want to use the **`tinymce`** component on admin and shop. You can call it like this.
 
@@ -388,7 +637,7 @@ Let's assume you want to use the **`shimmer`** You can call it like this.
 
 ### Quantity Changer
 
-The Quantity Changer component, provides a simple interface for users to increase or decrease a quantity value. 
+The Quantity Changer component, provides a simple interface for users to increase or decrease a quantity value.
 
 | Props          | Type    | Default Value | Description                       |
 | -------------- | ------- | ------------- | --------------------------------- |
@@ -540,7 +789,7 @@ Let's assume you want to use the **`tree`** component, You can call it like this
 ```
 
 ### Media(Image/Video)
- 
+
 The Media component in UnoPim provides a user interface for managing and displaying images/videos, allowing users to upload, edit, and delete images.:
 
 | Props               | Type        | Default Value | Description                                                      |

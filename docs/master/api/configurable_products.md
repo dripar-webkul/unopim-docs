@@ -17,11 +17,11 @@ For all API requests, include the following headers:
 
 ## Get All Configurable Products
 
-**Endpoint:**  
+**Endpoint:**
 ```
 GET {{url}}/api/v1/rest/configurable-products
 ```
-**Headers:**  
+**Headers:**
 Use the [Common Headers](#common-headers).
 
 ### Query Parameters
@@ -34,49 +34,49 @@ Use the [Common Headers](#common-headers).
 
 ### Usage Examples
 
-- **Limit:**  
+- **Limit:**
   Retrieve 10 configurable products per page.
   ```http
   GET {{url}}/api/v1/rest/configurable-products?limit=10
   ```
 
-- **Page:**  
+- **Page:**
   Fetch configurable products from page 1.
   ```http
   GET {{url}}/api/v1/rest/configurable-products?page=1
   ```
 
-- **Filters:**  
+- **Filters:**
   Filters refine query results based on specific configurable product attributes. You can combine multiple filters to achieve the desired output.
 
   #### Available Filters
 
   1. **sku**
-     - **Operators:** 
+     - **Operators:**
        - `=`: Exact match for the specified SKU.
        - `IN`: Matches any of the SKUs in the provided list.
        - `NOT IN`: Excludes any of the SKUs in the provided list.
 
   2. **categories**
-     - **Operators:** 
+     - **Operators:**
        - `IN`: Matches any of the categories in the provided list.
        - `NOT IN`: Excludes any of the categories in the provided list.
 
 #### Example Usage
 
-- **Filter by SKU:**  
+- **Filter by SKU:**
   Retrieve configurable products with specific SKUs.
   ```json
   {"sku":[{"operator":"IN","value":["305312", "584577"]}]}
   ```
 
-- **Filter by Categories:**  
+- **Filter by Categories:**
   Retrieve configurable products with specific categories.
   ```json
   {"categories":[{"operator":"IN","value":["category1", "category2"]}]}
   ```
 
-- **Combined Query:**  
+- **Combined Query:**
   Retrieve 10 configurable products from page 1 that have specific SKUs and categories.
   ```http
   GET {{url}}/api/v1/rest/configurable-products?limit=10&page=1&filters={"sku":[{"operator":"IN","value":["305312", "584577"]}],"categories":[{"operator":"IN","value":["category1", "category2"]}]}
@@ -127,11 +127,11 @@ The response will return a list of configurable products in JSON format:
 
 ## Get Configurable Product by SKU
 
-**Endpoint:**  
+**Endpoint:**
 ```
 GET {{url}}/api/v1/rest/configurable-products/{sku}
 ```
-**Headers:**  
+**Headers:**
 Use the [Common Headers](#common-headers).
 
 ### Path Parameter
@@ -140,7 +140,7 @@ Use the [Common Headers](#common-headers).
 |-------|-----------------------------------|--------|
 | `sku` | The unique SKU of the product     | String |
 
-Example:  
+Example:
 ```
 GET {{url}}/api/v1/rest/configurable-products/1111104
 ```
@@ -174,11 +174,11 @@ GET {{url}}/api/v1/rest/configurable-products/1111104
 
 ## Create a Configurable Product
 
-**Endpoint:**  
+**Endpoint:**
 ```
 POST {{url}}/api/v1/rest/configurable-products
 ```
-**Headers:**  
+**Headers:**
 Use the [Common Headers](#common-headers).
 
 ### Request Body Example
@@ -235,11 +235,11 @@ Use the [Common Headers](#common-headers).
 
 ## Update a Configurable Product
 
-**Endpoint:**  
+**Endpoint:**
 ```
 PUT {{url}}/api/v1/rest/configurable-products/{sku}
 ```
-**Headers:**  
+**Headers:**
 Use the [Common Headers](#common-headers).
 
 ### Request Body Example
@@ -308,13 +308,72 @@ Use the [Common Headers](#common-headers).
 
 ---
 
+## Patch a Configurable Product
+
+**Endpoint:**
+```
+PATCH {{url}}/api/v1/rest/configurable-products/{sku}
+```
+
+**Headers:**
+Use the [Common Headers](#common-headers).
+
+### Path Parameter
+
+| Name  | Description                   | Type   |
+|-------|-------------------------------|--------|
+| `sku` | The unique SKU of the product | String |
+
+Example:
+```
+PATCH {{url}}/api/v1/rest/configurable-products/test-product
+```
+
+### Request Body
+Only include the fields that need to be updated:
+
+```json
+{
+    "values": {
+        "common": {
+            "Name": "Updated Product Name",
+            "short_description": "Updated short description"
+        },
+        "categories": [
+            "master_accessories"
+        ]
+    },
+    "super_attributes": ["size"],
+    "variants": [
+        {
+            "sku": "configurable-product-5-small",
+            "attributes": {
+                "size": "small"
+            }
+        }
+    ]
+}
+```
+
+### Response
+
+::: details Response
+```json
+{
+    "success": true,
+    "message": "Product updated successfully"
+}
+```
+:::
+---
+
 ## Add New Variant (Product Child)
 
-**Endpoint:**  
+**Endpoint:**
 ```
 POST {{url}}/api/v1/rest/products
 ```
-**Headers:**  
+**Headers:**
 Use the [Common Headers](#common-headers).
 
 ### Request Body Example
@@ -370,5 +429,3 @@ Use the [Common Headers](#common-headers).
 :::
 
 ---
-
-

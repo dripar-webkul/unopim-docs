@@ -3,7 +3,7 @@ home: true
 heroText: UnoPim Developer Portal
 tagline: Find detailed documentation and code examples.
 actionText: Get Started →
-actionLink: /0.1/prologue/
+actionLink: /0.2/prologue/
 features:
 - title: Installation
   details: Learn how to install, configure, and customize UnoPim packages, including setup and code-level modifications.

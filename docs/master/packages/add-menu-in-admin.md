@@ -79,7 +79,7 @@ Route::get('/example', [ExampleController::class, 'index'])->name('example.menu.
    ```
 
 3. **Load CSS via Event in Service Provider**
-   - In your `ExampleServiceProvider`, listen for the `unopim.admin.layout.head` event to load the custom CSS in the main layout.
+   - In your `ExampleServiceProvider`, listen for the `unopim.admin.layout.head.before` event to load the custom CSS in the main layout.
 
    Example:
 
@@ -87,7 +87,7 @@ Route::get('/example', [ExampleController::class, 'index'])->name('example.menu.
    public function boot()
    {
       $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'example');
-      Event::listen('unopim.admin.layout.head', function($viewRenderEventManager) {
+      Event::listen('unopim.admin.layout.head.before', function($viewRenderEventManager) {
          $viewRenderEventManager->addTemplate('example::style');
       });
    }
@@ -134,10 +134,10 @@ After completing these steps, your custom menu item (Examples) with its associat
 
 In UnoPim, the side menu offers three levels of navigation to organize and access different sections and features efficiently:
 
-### First Level (Sidebar): 
+### First Level (Sidebar):
 This level appears in the sidebar and contains the primary menu items. These are the main sections of the admin panel, such as Dashboard, Catalog.
 
-### Second Level (Hover Menu): 
+### Second Level (Hover Menu):
 When you hover over an item in the first-level sidebar menu, the second level appears. This level contains sub-items related to the main section, providing more specific options. For example, hovering over "Catalog" might show options like Products, Categories, and Attributes.
 
 ### Third Level (Tabs):

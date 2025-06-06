@@ -67,7 +67,7 @@ class Exporter extends AbstractExporter
         // This function will prepare data and write it to the provided $filePath.
         //
         // You can gather data from the database, apply filters, and organize the export here.
-        
+
         return true;  // Return true if the batch export is successful.
     }
 
@@ -140,7 +140,7 @@ return [
                             'label' => 'XLSX',
                         ],
                     ],
-                ], 
+                ],
                 [
                     'name'     => 'with_media',
                     'title'    => 'With Media',
@@ -175,3 +175,42 @@ public function register()
 ```
 
 This merges the custom `exporter.php` configuration into the core exporter settings in UnoPim.
+
+
+## Step 4: Queue Operations
+
+After setting up your exporter, you need to configure and manage the queue system for processing exports. This is crucial for handling background tasks efficiently.
+
+### Managing Queue Workers
+
+When you make changes to any Exporter class or its configurations, follow these steps:
+
+```bash
+# Restart the queue worker
+php artisan queue:restart
+
+# Start the queue worker again
+php artisan queue:work
+```
+
+### Running Specific Export Jobs
+
+To run a specific export job for a particular user:
+
+```bash
+# Format: php artisan unopim:queue:work [export_id] [user_email]
+php artisan unopim:queue:work 1 johndoe@example.com
+```
+
+Parameters explained:
+- `1`: The ID of the export job you want to process
+- `johndoe@example.com`: The email of the logged-in user who initiated the export
+
+::: warning Important
+Always restart the queue workers after:
+- Modifying Exporter classes
+- Updating configurations
+- Installing or updating modules
+
+This ensures your changes take effect in the queue system.
+:::

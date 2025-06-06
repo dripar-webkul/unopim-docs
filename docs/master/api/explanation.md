@@ -14,7 +14,7 @@ Let's take an example of the categories section, we have some response in which 
 
 ## 1. Data Object `data`
 
-In the data object key, you will find the collection of many objects which represent the Bagisto store's categories.
+In the data object key, you will find the collection of many objects which represent the UnoPim store's categories.
 
 ## 2. Links Object `links`
 
@@ -52,7 +52,7 @@ In the links object, you will find four more object keys, which will be used acc
   }
   ~~~
 
-  | Name          | Info                                                                                               | 
+  | Name          | Info                                                                                               |
   | ------------- | -------------------------------------------------------------------------------------------------- |
   | current_page  | Display the current page number.                                                                   |
   | from          | Display the first count of the returned data object based on the provided page and limit filters.  |

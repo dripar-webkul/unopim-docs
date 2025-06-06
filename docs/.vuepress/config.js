@@ -27,6 +27,7 @@ module.exports = {
 
         sidebar: {
             '/0.1/': require('./version-configs/0.1'),
+            '/0.2/': require('./version-configs/0.2'),
             '/master/': require('./version-configs/master')
         }
     },

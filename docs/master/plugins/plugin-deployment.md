@@ -1,6 +1,6 @@
 # Plugin Deployment
 
-When deploying a custom UnoPim plugin or plugin, it's important to handle asset management properly. This ensures that assets like CSS, JavaScript, and images are available after deployment without needing to rebuild the assets on the production server. 
+When deploying a custom UnoPim plugin or plugin, it's important to handle asset management properly. This ensures that assets like CSS, JavaScript, and images are available after deployment without needing to rebuild the assets on the production server.
 
 In this section, we will cover how to structure and publish your assets during deployment so that they are accessible via the `public` directory.
 
@@ -22,14 +22,14 @@ Your plugin should include a `publishable` directory to store assets that need t
 
 In this example:
 
-- The `publishable` directory contains the `build` folder where your precompiled assets are stored (CSS, JS, fonts, images, etc.). 
+- The `publishable` directory contains the `build` folder where your precompiled assets are stored (CSS, JS, fonts, images, etc.).
 - These assets will be copied to the `public` directory when the plugin is deployed.
 
 ---
 
 ### 2. **Building Assets for Deployment**
 
-Before deploying your plugin, ensure that the assets are properly built. 
+Before deploying your plugin, ensure that the assets are properly built.
 
 If you are using a bundler like Vite, you should run the build process locally:
 
@@ -53,14 +53,14 @@ In the `ExampleServiceProvider`, add the following `publishes()` method inside t
 public function boot()
 {
     $this->loadViewsFrom(__DIR__ . '/../Resources/views', 'example');
-    
+
     // Publish the assets from the 'publishable' directory to the 'public/themes' directory
     $this->publishes([
         __DIR__.'/../../publishable' => public_path('themes'),
     ], 'example');
-    
-    // Optionally, load the CSS for your custom menu using the 'unopim.admin.layout.head' event
-    Event::listen('unopim.admin.layout.head', function($viewRenderEventManager) {
+
+    // Optionally, load the CSS for your custom menu using the 'unopim.admin.layout.head.before' event
+    Event::listen('unopim.admin.layout.head.before', function($viewRenderEventManager) {
         $viewRenderEventManager->addTemplate('example::style');
     });
 }

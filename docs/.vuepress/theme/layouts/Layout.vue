@@ -133,10 +133,10 @@ export default {
   methods: {
     updateTopNavStyles() {
       let currentPath = this.$route.path.split('/');
-      
+
       let version = currentPath[1];
 
-      if ([`master`, `0.1`].includes(version)) {
+      if ([`master`, `0.1`, `0.2`].includes(version)) {
         this.applyTopNavCustomStyles();
       } else {
         this.removeTopNavCustomStyles();
