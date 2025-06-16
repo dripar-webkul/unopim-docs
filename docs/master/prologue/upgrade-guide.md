@@ -3,7 +3,7 @@
 [[Toc]]
 
 ## Overview
-This guide will help you upgrade your Unopim installation to version 0.2.0. Please follow these instructions carefully to ensure a smooth upgrade process.
+This guide will help you upgrade your Unopim installation to version 0.2.1. Please follow these instructions carefully to ensure a smooth upgrade process.
 
 ## Pre-upgrade Checklist
 -  Backup your entire project
@@ -21,28 +21,44 @@ mysqldump -u your_db_user -p your_db_name > unopim_backup.sql
 ```
 
 ### 2. Download New Version
-Download Unopim v0.2.0 from one of these sources:
-- [GitHub Release v0.2.0](https://github.com/unopim/unopim/archive/refs/tags/v0.2.0.zip)
+Download Unopim v0.2.1 from one of these sources:
+- [GitHub Release v0.2.1](https://github.com/unopim/unopim/archive/refs/tags/v0.2.1.zip)
 - [Official Website](https://unopim.com/download)
 
 ### 3. Update Project Files
+
 Update your project files with the new version. You can do this by extracting the downloaded zip file and copying over the necessary files.
 
 ```bash
-# Extract the new version
-unzip unopim-0.2.0.zip
-
-# Copy your environment file
-cp .env unopim-0.2.0/
-
-# Copy storage directory
-cp -r storage/* unopim-0.2.0/storage/
+# Extract the new version to your desired location
+unzip unopim-0.2.1.zip
 ```
+
+**Copy your existing configuration and data:**
+
+Copy the `.env` file and storage folder from your current UnoPim installation to the new `unopim-0.2.1` folder:
+
+```bash
+# Copy your environment file from current installation
+cp /path/to/current/unopim/.env unopim-0.2.1/
+
+# Copy storage directory from current installation
+cp -r /path/to/current/unopim/storage/* unopim-0.2.1/storage/
+```
+
+**Navigate to the new directory:**
+
+Open terminal at the path of the new `unopim-0.2.1` directory (e.g., `unopim-0.2.1`) and run the commands in the following steps.
+
+**Note:** The upgrade will be completed in this new `unopim-0.2.1` folder. After successful upgrade and testing, you can either:
+- Rename the new folder to replace your current installation
+- Move the upgraded installation to your required path
+- Update your web server configuration to point to the new directory
 
 ### 4. Install Dependencies
 Make sure you have Composer installed. Navigate to the new Unopim directory and run:
 ```bash
-cd unopim-0.2.0
+cd unopim-0.2.1
 composer install
 ```
 
