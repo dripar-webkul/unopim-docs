@@ -34,7 +34,7 @@ To install UnoPim using Composer, use the following steps:
 
     ```
     - Please Enter the APP URL :
-    - Please Enter the Application Name : 
+    - Please Enter the Application Name :
     - Please select the default locale :
     - Please enter the default currency :
     - Please choose the Allowed Locales for your channels :
@@ -55,7 +55,7 @@ To install UnoPim using Composer, use the following steps:
     - Configure the Password for admin user :
     ```
 
-## Installation with Docker
+## Install Using Docker
 
 If you have Docker/Docker Compose installed, follow these steps:
 
@@ -63,12 +63,12 @@ If you have Docker/Docker Compose installed, follow these steps:
    - HTTPS: `git clone https://github.com/unopim/unopim.git`
    - SSH: `git clone git@github.com:unopim/unopim.git`
 
-2. **Enter the directory**:  
+2. **Enter the directory**:
    ```bash
    cd unopim
    ```
 
-3. **Start the Docker containers**:  
+3. **Start the Docker containers**:
    ```bash
    docker-compose up -d
    ```
@@ -78,8 +78,8 @@ If you have Docker/Docker Compose installed, follow these steps:
    - Application: `http://localhost:8000`
    - MySQL: `http://localhost:3306`
 
-> **Note**:  
-> If MySQL is already running on your system, change the MySQL port in the `docker-compose.yml` and `.env` files.  
+> **Note**:
+> If MySQL is already running on your system, change the MySQL port in the `docker-compose.yml` and `.env` files.
 > Run `docker-compose up -d` again to apply changes.
 
 ## Start Using UnoPim
@@ -105,7 +105,7 @@ To access UnoPim on your local server, follow these steps:
 
 3. Open your browser and access the provided local server URL.
 
-## Configuring the Virtual Host
+## Configure the Virtual Host
 
 ### Creating the Virtual Host File
 
