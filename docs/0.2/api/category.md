@@ -47,15 +47,11 @@ The API will return a list of categories in a JSON format.
 ```json
 {
   "data": [
-    {
-      "code": "master_accessories",
-      "parent": "master",
-      "additional_data": {
-        "common": {
-          "description": "Accessories Category"
-        }
+      {
+          "code": "root",
+          "parent": null,
+          "additional_data": null
       }
-    }
   ],
   "current_page": 1,
   "last_page": 1,
@@ -95,18 +91,16 @@ The response will contain details of the requested category.
 ::: details Response
 ```json
 {
-  "code": "master_accessories",
-  "parent": "master",
-  "additional_data": {
-    "common": {
-      "description": "Accessories Category"
-    },
-    "locale_specific": {
-      "en_US": {
-        "name": "Master Accessories"
-      }
+    "code": "electronic",
+    "parent": null,
+    "additional_data": {
+        "locale_specific": {
+            "en_US": {
+                "name": "Electronic (en_US)",
+                "description": "<ol>\n<li><em><strong>Electronics category Description Editor</strong></em></li>\n</ol>"
+            }
+        }
     }
-  }
 }
 ```
 :::
@@ -135,33 +129,13 @@ To create a new category, provide the category code, parent category, and any ad
 
 ```json
 {
-    "code": "electronic4",
-    "parent": "electronic2",
+    "code": "electronic",
+    "parent": "root",
     "additional_data": {
-        "common": {
-            "file": "https://morth.nic.in/sites/default/files/dd12-13_0.pdf",
-            "image": "https://www.gstatic.com/webp/gallery3/1.sm.png",
-            "unique": "Electronics Unique Category",
-            "boolean": "1",
-            "date123": "2024-07-24",
-            "checkbox": "cbcat2,cbcat3",
-            "required": "Electronics Required Category",
-            "date_time": "2024-07-23 11:40:00",
-            "description": "Electronics Category Description",
-            "multi_select": "mcat3,mcat4",
-            "configuration": "Electronics Configuration Section Category",
-            "simple_select": "cat2",
-            "description_editor": "<ol>\r\n<li><em><strong>Electronics category Description Editor</strong></em></li>\r\n</ol>"
-        },
         "locale_specific": {
-            "de_DE": {
-                "name": "Electronic 3 (de_DE)"
-            },
             "en_US": {
-                "name": "Electronic 3(en_US)"
-            },
-            "fr_FR": {
-                "name": "Electronic 3(fr_FR)"
+                "name": "Electronic (en_US)",
+                "description": "<ol>\r\n<li><em><strong>Electronics category Description Editor</strong></em></li>\r\n</ol>"
             }
         }
     }
@@ -207,39 +181,16 @@ To update a category, provide the category code, parent category, and any additi
 
 ```json
 {
-  "code": "electronic",
-  "parent": "electronic2",
-  "additional_data": {
-      "common": {
-          "file": "category/19/file/WK-HR-004 - Holiday list_2020.pdf",
-          "image": "category/19/image/6.jpg",
-          "unique": "Electronics Unique Category",
-          "boolean": "1",
-          "date123": "2024-07-24",
-          "checkbox": "cbcat2,cbcat3",
-          "required": "Electronics Required Category",
-          "date_time": "2024-07-23 11:40:00",
-          "description": "Electronics Category Description",
-          "multi_select": "mcat3,mcat4",
-          "configuration": "Electronics Configuration Section Category",
-          "simple_select": "cat2",
-          "description_editor": "<ol>\r\n<li><em><strong>Electronics category Description Editor</strong></em></li>\r\n</ol>"
-      },
-      "locale_specific": {
-          "de_DE": {
-              "name": "Electronic 4 (de_DE)",
-              "locale": "Electronic Locale wise Category DE"
-          },
-          "en_US": {
-              "name": "Electronic 4(en_US)",
-              "locale": "Electronic Locale wise Category EN"
-          },
-          "fr_FR": {
-              "name": "Electronic 4(fr_FR)",
-              "locale": "Electronic Locale wise Category FR"
-          }
-      }
-  }
+    "code": "electronic",
+    "parent": "root",
+    "additional_data": {
+        "locale_specific": {
+            "en_US": {
+                "name": "Electronic",
+                "description": "<ol>\r\n<li><em><strong>Electronics category Description Editor</strong></em></li>\r\n</ol>"
+            }
+        }
+    }
 }
 ```
 
@@ -287,13 +238,10 @@ Only include the fields that need to be updated:
 ```json
 {
     "additional_data": {
-        "common": {
-            "description": "Updated Electronic Category Description",
-            "image": "category/new-image.jpg"
-        },
         "locale_specific": {
             "en_US": {
-                "name": "Updated Electronic Name"
+                "name": "Updated Electronic Name",
+                "description": "<ol>\r\n<li><em><strong>Updated Electronics category Description Editor</strong></em></li>\r\n</ol>"
             }
         }
     }
