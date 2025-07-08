@@ -90,17 +90,45 @@ The response will return a list of configurable products in JSON format:
 ```json
 {
     "data": [
-        {
-            "sku": "1111104",
+         {
+            "sku": "2001PS",
+            "status": true,
             "parent": null,
-            "family": "accessories",
+            "family": "default",
             "type": "configurable",
             "additional": null,
-            "created_at": "2024-10-03T05:55:58.000000Z",
-            "updated_at": "2024-10-03T05:55:58.000000Z",
+            "created_at": "2025-06-27T09:34:16.000000Z",
+            "updated_at": "2025-06-27T09:36:36.000000Z",
             "values": {
                 "common": {
-                    "sku": "1111104"
+                    "sku": "2001PS",
+                    "url_key": "sample Configurable",
+                    "product_number": "Product Number 21"
+                },
+                "categories": [
+                    "root"
+                ],
+                "channel_specific": {
+                    "default": {
+                        "cost": {
+                            "USD": "5645"
+                        }
+                    }
+                },
+                "channel_locale_specific": {
+                    "default": {
+                        "en_AU": {
+                            "name": "Product Name Configurable",
+                            "price": {
+                                "USD": "5465"
+                            },
+                            "meta_title": "Title",
+                            "description": "<p>Description of Product</p>",
+                            "meta_keywords": "Keywords",
+                            "meta_description": "Description",
+                            "short_description": "<p>Short Description For Product</p>"
+                        }
+                    }
                 }
             },
             "super_attributes": [
@@ -150,23 +178,51 @@ GET {{url}}/api/v1/rest/configurable-products/1111104
 ::: details Response
 ```json
 {
-  "sku": "1111104",
-  "parent": null,
-  "family": "accessories",
-  "type": "configurable",
-  "additional": null,
-  "created_at": "2024-10-03T05:55:58.000000Z",
-  "updated_at": "2024-10-03T05:55:58.000000Z",
-  "values": {
-      "common": {
-          "sku": "1111104"
-      }
-  },
-  "super_attributes": [
-      "color",
-      "size"
-  ],
-  "variants": []
+    "sku": "2001PS",
+    "status": true,
+    "parent": null,
+    "family": "default",
+    "type": "configurable",
+    "additional": null,
+    "created_at": "2025-06-27T09:34:16.000000Z",
+    "updated_at": "2025-06-27T09:36:36.000000Z",
+    "values": {
+        "common": {
+            "sku": "2001PS",
+            "url_key": "sample Configurable",
+            "product_number": "Product Number 21"
+        },
+        "categories": [
+            "root"
+        ],
+        "channel_specific": {
+            "default": {
+                "cost": {
+                    "USD": "5645"
+                }
+            }
+        },
+        "channel_locale_specific": {
+            "default": {
+                "en_AU": {
+                    "name": "Product Name Configurable",
+                    "price": {
+                        "USD": "5465"
+                    },
+                    "meta_title": "Title",
+                    "description": "<p>Description of Product</p>",
+                    "meta_keywords": "Keywords",
+                    "meta_description": "Description",
+                    "short_description": "<p>Short Description For Product</p>"
+                }
+            }
+        }
+    },
+    "super_attributes": [
+        "color",
+        "size"
+    ],
+    "variants":[]
 }
 ```
 :::
@@ -185,38 +241,49 @@ Use the [Common Headers](#common-headers).
 
 ```json
 {
-  "sku": "test-product",
-  "parent": null,
-  "family": "accessories",
-  "type": "configurable",
-  "additional": null,
-  "created_at": "2024-07-12T07:41:29.000000Z",
-  "updated_at": "2024-07-24T11:17:13.000000Z",
-  "values": {
-    "common": {
-      "sku": "test-product",
-      "Name": "test Product",
-      "size": "size4",
-      "store": "mobile",
-      "status": "false",
-      "collection": "option3",
-      "description": "<p>test product description</p>",
-      "expire_date": "2024-07-12",
-      "releasedate": "2024-07-12 12:00:00",
-      "auto_exposure": "false",
-      "short_description": "test Product"
+    "sku": "2001PS2",
+    "status": true,
+    "parent": null,
+    "family": "default",
+    "type": "configurable",
+    "additional": null,
+    "values": {
+        "common": {
+            "sku": "2001PS2",
+            "url_key": "sample Configurable Test",
+            "product_number": "Product Number 212"
+        },
+        "categories": [
+            "root"
+        ],
+        "channel_specific": {
+            "default": {
+                "cost": {
+                    "USD": "5645"
+                }
+            }
+        },
+        "channel_locale_specific": {
+            "default": {
+                "en_AU": {
+                    "name": "Product Name Configurable",
+                    "price": {
+                        "USD": "5465"
+                    },
+                    "meta_title": "Title",
+                    "description": "<p>Description of Product</p>",
+                    "meta_keywords": "Keywords",
+                    "meta_description": "Description",
+                    "short_description": "<p>Short Description For Product</p>"
+                }
+            }
+        }
     },
-    "categories": [
-      "master_men_blazers",
-      "master_men_blazers_deals"
+    "super_attributes": [
+        "color",
+        "size"
     ],
-    "associations": {
-      "up_sells": ["1111111304"],
-      "cross_sells": ["1111111304"],
-      "related_products": ["1111111304"]
-    }
-  },
-  "super_attributes": ["color"]
+    "variants": []
 }
 ```
 
@@ -246,52 +313,49 @@ Use the [Common Headers](#common-headers).
 
 ```json
 {
-  "sku": "test-product",
-  "parent": null,
-  "family": "accessories",
-  "type": "test",
-  "additional": null,
-  "created_at": "2024-07-12T07:41:29.000000Z",
-  "updated_at": "2024-07-24T11:17:13.000000Z",
-  "values": {
-    "common": {
-      "sku": "test-product",
-      "Name": "test Product",
-      "size": "size4",
-      "store": "mobile",
-      "status": "false",
-      "collection": "option3",
-      "description": "<p>test product description</p>",
-      "expire_date": "2024-07-12",
-      "releasedate": "2024-07-12 12:00:00",
-      "auto_exposure": "false",
-      "short_description": "test Product111"
+    "sku": "2001PS2",
+    "status": true,
+    "parent": null,
+    "family": "default",
+    "type": "configurable",
+    "additional": null,
+    "values": {
+        "common": {
+            "sku": "2001PS2",
+            "url_key": "sample Configurable Update",
+            "product_number": "Product Number 212"
+        },
+        "categories": [
+            "root"
+        ],
+        "channel_specific": {
+            "default": {
+                "cost": {
+                    "USD": "565"
+                }
+            }
+        },
+        "channel_locale_specific": {
+            "default": {
+                "en_AU": {
+                    "name": "Product Name Configurable",
+                    "price": {
+                        "USD": "545"
+                    },
+                    "meta_title": "Title",
+                    "description": "<p>Description of Product Update</p>",
+                    "meta_keywords": "Keywords",
+                    "meta_description": "Description",
+                    "short_description": "<p>Short Description For Product</p>"
+                }
+            }
+        }
     },
-    "categories": [
-      "master_men_blazers",
-      "master_men_blazers_deals"
+    "super_attributes": [
+        "color",
+        "size"
     ],
-    "associations": {
-      "up_sells": ["1111111304"],
-      "cross_sells": ["1111111304"],
-      "related_products": ["1111111304"]
-    }
-  },
-  "super_attributes": ["color"],
-  "variants": [
-    {
-      "sku": "test-product-option1",
-      "attributes": {
-        "color": "option1"
-      }
-    },
-    {
-      "sku": "test-product-option2",
-      "attributes": {
-        "color": "option2"
-      }
-    }
-  ]
+    "variants": []
 }
 ```
 
@@ -307,6 +371,7 @@ Use the [Common Headers](#common-headers).
 :::
 
 ---
+
 ## Patch a Configurable Product
 
 **Endpoint:**
@@ -335,11 +400,11 @@ Only include the fields that need to be updated:
 {
     "values": {
         "common": {
-            "Name": "Updated Product Name",
-            "short_description": "Updated short description"
+            "Name": "Product Name Updated",
+            "short_description": "short description"
         },
         "categories": [
-            "master_accessories"
+            "root"
         ]
     },
     "super_attributes": ["size"],
@@ -379,40 +444,23 @@ Use the [Common Headers](#common-headers).
 
 ```json
 {
-  "parent": "test-product",
-  "family": "accessories",
-  "additional": null,
-  "created_at": "2024-07-12T07:41:29.000000Z",
-  "updated_at": "2024-07-24T11:17:13.000000Z",
-  "values": {
-    "common": {
-      "sku": "test-product-option2",
-      "Name": "test Product",
-      "size": "size4",
-      "store": "mobile",
-      "status": "false",
-      "collection": "option3",
-      "description": "<p>test product description</p>",
-      "expire_date": "2024-07-12",
-      "releasedate": "2024-07-12 12:00:00",
-      "auto_exposure": "false",
-      "short_description": "test Product111"
+    "parent": "2001PS",
+    "family": "default",
+    "additional": null,
+    "values": {
+        "common": {
+            "sku": "product-option1"
+        },
+        "categories": [
+            "root"
+        ]
     },
-    "categories": [
-      "master_men_blazers",
-      "master_men_blazers_deals"
-    ],
-    "associations": {
-      "up_sells": ["1111111304"],
-      "cross_sells": ["1111111304"],
-      "related_products": ["1111111304"]
+    "variant": {
+        "attributes": {
+            "color": "Red",
+            "size": "L"
+        }
     }
-  },
-  "variant": {
-    "attributes": {
-      "color": "option2"
-    }
-  }
 }
 ```
 

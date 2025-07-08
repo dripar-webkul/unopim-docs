@@ -107,36 +107,87 @@ The response will return a list of products in JSON format:
 ```json
 {
   "data": [
-      {
-          "sku": "305312",
-          "parent": null,
-          "family": "default",
-          "type": "simple",
-          "created_at": "2024-09-25T14:48:20.000000Z",
-          "updated_at": "2024-09-25T14:48:20.000000Z",
-          "values": {
-              "common": {
-                  "sku": "305312"
-              }
+    {
+      "sku": "100PS3333",
+      "status": true,
+      "parent": null,
+      "family": "default",
+      "type": "simple",
+      "additional": null,
+      "created_at": "2025-06-27T07:20:58.000000Z",
+      "updated_at": "2025-06-27T07:23:37.000000Z",
+      "values": {
+        "common": {
+          "sku": "100PS3333",
+          "size": "L",
+          "color": "Yellow",
+          "image": false,
+          "url_key": "sample Product",
+          "product_number": "Product Number"
+        },
+        "categories": ["root"],
+        "channel_specific": {
+          "default": {
+            "cost": {"USD": "12"}
           }
-      },
-      {
-          "sku": "584577",
-          "parent": null,
-          "family": "default",
-          "type": "simple",
-          "created_at": "2024-09-25T14:49:00.000000Z",
-          "updated_at": "2024-09-25T14:49:00.000000Z",
-          "values": {
-              "common": {
-                  "sku": "584577"
-              }
+        },
+        "channel_locale_specific": {
+          "default": {
+            "en_AU": {
+              "name": "Name",
+              "price": {"USD": "12"},
+              "meta_title": "Meta Title",
+              "description": "<p>&nbsp; Description for Product<\/p>",
+              "meta_keywords": "meta Keyword",
+              "meta_description": "meta Description",
+              "short_description": "<p>Short Description&nbsp; for Product<\/p>"
+            }
           }
+        }
       }
+    },
+    {
+      "sku": "100PS",
+      "status": true,
+      "parent": null,
+      "family": "default",
+      "type": "simple",
+      "additional": null,
+      "created_at": "2025-06-27T07:37:01.000000Z",
+      "updated_at": "2025-06-27T07:39:07.000000Z",
+      "values": {
+        "common": {
+          "sku": "100PS",
+          "size": "M",
+          "color": "Green",
+          "url_key": "sample Product Test",
+          "product_number": "123452"
+        },
+        "categories": ["root"],
+        "channel_specific": {
+          "default": {
+            "cost": {"USD": "23"}
+          }
+        },
+        "channel_locale_specific": {
+          "default": {
+            "en_AU": {
+              "name": "Product Name",
+              "price": {"USD": "23"},
+              "meta_title": "Meta",
+              "description": "<p>Description For Product<\/p>",
+              "meta_keywords": "Key",
+              "meta_description": "Description",
+              "short_description": "<p>Short Description For Product<\/p>"
+            }
+          }
+        }
+      }
+    }
   ],
   "current_page": 1,
   "last_page": 1,
-  "total": 3,
+  "total": 2,
   "links": {
       "first": "{{url}}/api/v1/rest/products?page=1",
       "last": "{{url}}/api/v1/rest/products?page=1",
@@ -165,7 +216,7 @@ Use the [Common Headers](#common-headers).
 
 Example:
 ```
-GET {{url}}/api/v1/rest/products/1111111304
+GET {{url}}/api/v1/rest/products/100PS3333
 ```
 
 ### Response
@@ -173,17 +224,42 @@ GET {{url}}/api/v1/rest/products/1111111304
 ::: details Response
 ```json
 {
-  "sku": "1111111304",
+  "sku": "100PS3333",
+  "status": true,
   "parent": null,
   "family": "default",
   "type": "simple",
   "additional": null,
-  "created_at": "2024-10-03T05:25:49.000000Z",
-  "updated_at": "2024-10-03T05:25:49.000000Z",
+  "created_at": "2025-06-27T07:20:58.000000Z",
+  "updated_at": "2025-06-27T07:23:37.000000Z",
   "values": {
-      "common": {
-          "sku": "1111111304"
+    "common": {
+      "sku": "100PS3333",
+      "size": "L",
+      "color": "Yellow",
+      "image": false,
+      "url_key": "sample Product",
+      "product_number": "Product Number"
+    },
+    "categories": ["root"],
+    "channel_specific": {
+      "default": {
+        "cost": {"USD": "12"}
       }
+    },
+    "channel_locale_specific": {
+      "default": {
+        "en_AU": {
+          "name": "Name",
+          "price": {"USD": "12"},
+          "meta_title": "Meta Title",
+          "description": "<p>&nbsp; Description for Product<\/p>",
+          "meta_keywords": "meta Keyword",
+          "meta_description": "meta Description",
+          "short_description": "<p>Short Description&nbsp; for Product<\/p>"
+        }
+      }
+    }
   }
 }
 ```
@@ -203,49 +279,45 @@ Use the [Common Headers](#common-headers).
 
 ```json
 {
-    "sku": "44441",
+    "sku": "100PS3355",
+    "status": true,
     "parent": null,
-    "family": "accessories",
+    "family": "default",
     "type": "simple",
-    "created_at": "2024-07-11T13:21:46.000000Z",
-    "updated_at": "2024-07-24T09:50:08.000000Z",
+    "additional": null,
     "values": {
         "common": {
-            "sku": "44441",
-            "Name": "Webkul Simple Product",
-            "size": "size3",
-            "color": "option1",
-            "files": "product/1/files/sample.pdf",
-            "image": "product/1/image/sample.jpg",
-            "price": "{\"USD\":\"100\"}",
-            "store": "garment",
-            "status": "true",
-            "collection": "option2,option3",
-            "description": "<p>Product Description</p>",
-            "expire_date": "2024-07-11",
-            "releasedate": "2024-07-11 08:25:00",
-            "auto_exposure": "true",
-            "colormuliselect": "red1,blue1",
-            "short_description": "Short Description"
+            "sku": "100PS3355",
+            "size": "L",
+            "color": "Yellow",
+            "image": false,
+            "url_key": "sample Product API",
+            "product_number": "Product 122"
         },
         "categories": [
-            "master",
-            "master_accessories",
-            "master_accessories_belts"
+            "root"
         ],
-        "associations": {
-            "up_sells": ["1111111307"],
-            "cross_sells": ["1111111307"],
-            "related_products": ["1111111307"]
-        },
-        "locale_specific": {
-            "de_DE": {"colorlocalewise": "pink"},
-            "en_US": {"colorlocalewise": "pink"},
-            "fr_FR": {"colorlocalewise": "white"}
-        },
         "channel_specific": {
-            "default": {"colorchannelwise": "opt2"},
-            "ecommerce": {"colorchannelwise": "opt2"}
+            "default": {
+                "cost": {
+                    "USD": "12"
+                }
+            }
+        },
+        "channel_locale_specific": {
+            "default": {
+                "en_AU": {
+                    "name": "Name",
+                    "price": {
+                        "USD": "12"
+                    },
+                    "meta_title": "Meta Title",
+                    "description": "<p>&nbsp; Description for Product</p>",
+                    "meta_keywords": "meta Keyword",
+                    "meta_description": "meta Description",
+                    "short_description": "<p>Short Description&nbsp; for Product</p>"
+                }
+            }
         }
     }
 }
@@ -281,55 +353,52 @@ Use the [Common Headers](#common-headers).
 
 Example:
 ```
-PUT {{url}}/api/v1/rest/products/44441
+PUT {{url}}/api/v1/rest/products/100PS3355
 ```
 
 ### Payload
 
 ```json
 {
-    "sku": "44441",
+    "sku": "100PS3355",
+    "status": true,
     "parent": null,
-    "family": "accessories",
+    "family": "default",
     "type": "simple",
-    "created_at": "2024-07-11T13:21:46.000000Z",
-    "updated_at": "2024-07-24T09:50:08.000000Z",
+    "additional": null,
     "values": {
         "common": {
-            "sku": "44441",
-            "Name": "Updated Product",
-            "size": "size3",
-            "color": "option1",
-            "files": "product/1/files/sample.pdf",
-            "image": "product/1/image/sample.jpg",
-            "price": "{\"USD\":\"100\"}",
-            "store": "garment",
-            "status": "true",
-            "collection": "option2,option3",
-            "description": "<p>Updated Product Description</p>",
-            "expire_date": "2024-07-11",
-            "releasedate": "2024-07-11 08:25:00",
-            "auto_exposure": "true",
-            "colormuliselect": "red1,blue1",
-            "short_description": "Updated Short Description"
+            "sku": "100PS3355",
+            "size": "M",
+            "color": "Yellow",
+            "image": false,
+            "url_key": "sample Product API",
+            "product_number": "Product 123"
         },
         "categories": [
-            "master",
-            "master_accessories_belts"
+            "root"
         ],
-        "associations": {
-            "up_sells": ["1111111307"],
-            "cross_sells": ["1111111307"],
-            "related_products": ["1111111307"]
-        },
-        "locale_specific": {
-            "de_DE": {"colorlocalewise": "black"},
-            "en_US": {"colorlocalewise": "pink"},
-            "fr_FR": {"colorlocalewise": "white"}
-        },
         "channel_specific": {
-            "default": {"colorchannelwise": "opt2"},
-            "ecommerce": {"colorchannelwise": "opt2"}
+            "default": {
+                "cost": {
+                    "USD": "122"
+                }
+            }
+        },
+        "channel_locale_specific": {
+            "default": {
+                "en_AU": {
+                    "name": "Name Update",
+                    "price": {
+                        "USD": "122"
+                    },
+                    "meta_title": "Meta Title",
+                    "description": "<p>&nbsp; Description for Product Update</p>",
+                    "meta_keywords": "meta Keyword",
+                    "meta_description": "meta Description",
+                    "short_description": "<p>Short Description&nbsp; for Product</p>"
+                }
+            }
         }
     }
 }
@@ -363,7 +432,7 @@ Use the [Common Headers](#common-headers).
 
 Example:
 ```
-PATCH {{url}}/api/v1/rest/products/44441
+PATCH {{url}}/api/v1/rest/products/100PS3355
 ```
 
 ### Payload
@@ -414,7 +483,7 @@ Use the [Common Headers](#common-headers).
 
 Example:
 ```
-DELETE {{url}}/api/v1/rest/products/44441
+DELETE {{url}}/api/v1/rest/products/100PS3355
 ```
 
 ### Response
@@ -424,7 +493,7 @@ DELETE {{url}}/api/v1/rest/products/44441
 {
   "success": true,
   "message": "Product deleted successfully",
-  "sku": "44441"
+  "sku": "100PS3355"
 }
 ```
 :::
