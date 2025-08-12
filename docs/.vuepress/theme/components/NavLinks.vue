@@ -53,6 +53,7 @@
 
         <option value="0.1">0.1</option>
         <option value="0.2">0.2</option>
+        <option value="0.3">0.3</option>
       </select>
     </div>
   </nav>

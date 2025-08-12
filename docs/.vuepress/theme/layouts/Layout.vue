@@ -136,7 +136,7 @@ export default {
 
       let version = currentPath[1];
 
-      if ([`master`, `0.1`, `0.2`].includes(version)) {
+      if ([`master`, `0.1`, `0.2`,`0.3`].includes(version)) {
         this.applyTopNavCustomStyles();
       } else {
         this.removeTopNavCustomStyles();

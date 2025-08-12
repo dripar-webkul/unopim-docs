@@ -32,6 +32,8 @@ export default {
         this.displayText = `This is the documentation for the current version (v0.1) of UnoPim. Stay informed and make the most of UnoPim's capabilities.`;
       } else if (['0.2'].includes(version)) {
         this.displayText = `This is the documentation for the current version (v0.2) of UnoPim. Stay informed and make the most of UnoPim's capabilities.`;
+      }else if (['0.3'].includes(version)) {
+        this.displayText = `This is the documentation for the current version (v0.3) of UnoPim. Stay informed and make the most of UnoPim's capabilities.`;
       } else if (version === 'master') {
         this.displayText = `WARNING: You're browsing the documentation for an upcoming version. Features of this release are subject to change.`;
       } else {
