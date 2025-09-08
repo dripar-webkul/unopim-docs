@@ -305,11 +305,18 @@ To access UnoPim on your local server, follow these steps:
 
 3. Open your browser and access the provided local server URL.
 
+
 ## Configure the Virtual Host
 
-### Creating the Virtual Host File
+Depending on your web server, you can configure UnoPim with either **Apache 2** or **NGINX**.
 
-This guide explains how to create and configure a virtual host for Apache to point to the installation folder of UnoPIM, Create the file **`/etc/apache2/sites-available/unopim.local.conf`**:
+---
+
+### Configure Using Apache 2
+
+#### Creating the Virtual Host File
+
+Create the file **`/etc/apache2/sites-available/unopim.local.conf`**:
 
 ```apache
 <VirtualHost *:80>
@@ -333,26 +340,96 @@ This guide explains how to create and configure a virtual host for Apache to poi
     CustomLog ${APACHE_LOG_DIR}/unopim_access.log combined
 </VirtualHost>
 ```
-Notes:
-- Replace **`/path/to/installation`** with the actual path where UnoPIM is installed.
-- Ensure that **`/run/php/php8.2-fpm.sock`** matches the socket path defined in **`/etc/php/8.2/fpm/pool.d/www.conf`**. Update this value if it differs.
 
-### Enabling the Virtual Host
+**Notes**:
 
-Run the following commands to enable the virtual host:
+* Replace **`/path/to/installation`** with the actual path where UnoPim is installed.
+* Ensure that **`/run/php/php8.2-fpm.sock`** matches the socket path defined in **`/etc/php/8.2/fpm/pool.d/www.conf`**.
 
-   ```bash
-   $ sudo apache2ctl configtest
-    # This will return 'Syntax OK'
+#### Enabling the Virtual Host
 
-   $ sudo a2ensite unopim.local
-   $ sudo service apache2 reload
-   ```
-### Adding the Virtual Host Name
+```bash
+sudo apache2ctl configtest   # should return "Syntax OK"
+sudo a2ensite unopim.local
+sudo service apache2 reload
+```
 
-Add the following entry to your **`/etc/hosts`** file:
+#### Adding the Virtual Host Name
 
-   ```
-    127.0.0.1    unopim.local
-   ```
-Your virtual host configuration for UnoPIM is now complete. Visit **`http://unopim.local`** in your browser to access the application.
+Edit your **`/etc/hosts`** file:
+
+```
+127.0.0.1    unopim.local
+```
+
+Now open **`http://unopim.local`** in your browser to access UnoPim.
+
+---
+
+### Configure Using NGINX
+
+#### Creating the Virtual Host File
+
+Create the file **`/etc/nginx/sites-available/unopim.local.conf`**:
+
+```nginx
+server {
+    listen 80;
+    server_name unopim.local;   # Replace with your dev domain or server IP
+
+    root /home/unopim/html/unopim/public;   # UnoPim document root
+    index index.php index.html index.htm;
+
+    # Handle static files (CSS, JS, images)
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    # Handle PHP requests
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php8.2-fpm.sock;   # Adjust PHP-FPM socket if needed
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    # Deny access to hidden files like .htaccess
+    location ~ /\.ht {
+        deny all;
+    }
+
+    error_log /var/log/nginx/unopim_error.log;
+    access_log /var/log/nginx/unopim_access.log;
+}
+```
+
+**Notes**:
+
+* Replace **`/home/unopim/html/unopim/public`** with your actual UnoPim installation path if different.
+* Make sure PHP-FPM is running (`php8.2-fpm` by default).
+
+---
+
+#### Enabling the Virtual Host
+
+```bash
+sudo ln -s /etc/nginx/sites-available/unopim.local.conf /etc/nginx/sites-enabled/
+sudo rm -f /etc/nginx/sites-enabled/default   # remove default config
+sudo nginx -t   # test config
+sudo systemctl reload nginx
+```
+
+---
+
+#### Adding the Virtual Host Name
+
+Add this entry to your **`/etc/hosts`** file on your server (and local machine if testing from there):
+
+```
+127.0.0.1    unopim.local
+```
+
+---
+
+
+Now open **`http://unopim.local`** in your browser to access UnoPim.

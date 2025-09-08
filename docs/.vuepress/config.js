@@ -23,6 +23,8 @@ module.exports = {
             { text: 'Home', link: '/' }
         ],
 
+        userGuide :{ text: 'User Guide', link: 'https://docs.unopim.com/' },
+
         contactUs: { text: 'Contact Us', link: 'https://unopim.com/en/contacts/' },
 
         sidebar: {

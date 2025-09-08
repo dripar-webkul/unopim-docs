@@ -442,3 +442,89 @@ Always restart the queue workers after:
 
 This ensures your changes take effect in the queue system.
 :::
+
+## QuickExport
+
+QuickExport is a streamlined export feature in UnoPim that enables rapid data export using pre-configured settings. Here’s how to set up and use QuickExport for your own plugin or data type:
+
+### 1. Understanding QuickExport Configuration
+
+Define your QuickExport profiles in the `Config/quick_exporters.php` configuration file. For example, to export products using your own plugin:
+
+```php
+return [
+    'ProductQuickExport' => [
+        'title'    => 'Product Quick Export',
+        'route'    => 'product.quick_export',
+        'exporter' => 'Webkul\Example\Helpers\Exporters\Product\Exporter',
+        'source'   => 'Webkul\Product\Repositories\ProductRepository',
+    ],
+];
+```
+
+- **title**: Display name for the export option.
+- **route**: Unique route name for the export action.
+- **exporter**: Fully-qualified class name of your exporter.
+- **source**: Repository or data source for export.
+
+---
+
+### 2. Using QuickExport
+
+**Via Admin Panel:**
+- Go to **Data Transfer > Export**
+- Select **Product Quick Export** from the quick export options
+- Export runs instantly with the pre-set configuration
+
+---
+
+### 3. Key Features
+
+A typical QuickExport profile can:
+- Map products to your desired format
+- Handle updates for existing records and creation for new ones
+- Process images and media files
+- Synchronize categories and attributes
+- Manage product variations (if applicable)
+- Export data in batches (e.g., 100 items per batch)
+
+---
+
+### 4. Creating a Custom QuickExport
+
+To add your own QuickExport:
+1. Add a configuration entry to `quick_exporters.php` (see above).
+2. Create an exporter class (e.g., `Product\Exporter`) that extends `AbstractExporter`.
+3. Register the export route in your plugin’s service provider.
+
+Example exporter class:
+
+```php
+namespace Webkul\Example\Helpers\Exporters\Product;
+
+use Webkul\DataTransfer\Helpers\Exporters\AbstractExporter;
+
+class Exporter extends AbstractExporter
+{
+    public function exportBatch($batch, $filePath): bool
+    {
+        // Your export logic here
+        return true;
+    }
+}
+```
+
+---
+
+### 5. Running QuickExport Jobs
+
+After making changes, restart your queue workers:
+
+```bash
+php artisan queue:restart
+php artisan queue:work
+```
+
+---
+
+**Tip:** QuickExport is ideal for one-click exports with minimal configuration. For more advanced options, use the standard export

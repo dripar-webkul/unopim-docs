@@ -18,7 +18,15 @@
         :item="item"
       />
     </div>
-
+    <a
+      :href="userGuide.link"
+      class="nav-item"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {{ userGuide.text }}
+      <OutboundLink />
+    </a>
     <!-- repo link -->
     <a
       v-if="repoLink"
@@ -31,7 +39,7 @@
       <OutboundLink />
     </a>
 
-    <a
+       <a
       :href="contactUs.link"
       class="nav-item"
       target="_blank"
@@ -40,6 +48,7 @@
       {{ contactUs.text }}
       <OutboundLink />
     </a>
+
 
     <div
       class="nav-item"
@@ -162,9 +171,19 @@ export default {
     },
 
     contactUs () {
+
       const { contactUs } = this.$site.themeConfig;
 
       return contactUs;
+    },
+
+    userGuide () {
+      console.log( this.$site.themeConfig);
+
+      const { userGuide } = this.$site.themeConfig;
+
+
+      return userGuide;
     },
   },
 
