@@ -57,30 +57,84 @@ To install UnoPim using Composer, use the following steps:
 
 ## Install Using Docker
 
-If you have Docker/Docker Compose installed, follow these steps:
+### Prerequisites
+
+Make sure **Docker** and **Docker Compose** are installed:
+
+Verify installation:
+
+```bash
+docker --version
+docker-compose --version
+```
+
+---
+
+### Setup Steps
 
 1. **Clone the repository**:
-   - HTTPS: `git clone https://github.com/unopim/unopim.git`
-   - SSH: `git clone git@github.com:unopim/unopim.git`
+
+   * HTTPS:
+
+     ```bash
+     git clone https://github.com/unopim/unopim.git
+     ```
+   * SSH:
+
+     ```bash
+     git clone git@github.com:unopim/unopim.git
+     ```
 
 2. **Enter the directory**:
+
    ```bash
    cd unopim
    ```
 
 3. **Start the Docker containers**:
+
    ```bash
    docker-compose up -d
    ```
 
-   This will pull the necessary images and set up the environment. Once running, access the application at:
+   This will pull the necessary images and set up the environment.
 
-   - Application: `http://localhost:8000`
-   - MySQL: `http://localhost:3306`
+---
 
-> **Note**:
-> If MySQL is already running on your system, change the MySQL port in the `docker-compose.yml` and `.env` files.
-> Run `docker-compose up -d` again to apply changes.
+### Access the Services
+
+* **Application** → `http://localhost:8000`
+* **MySQL** → `localhost:3306`
+* **PHPMyAdmin** (if enabled in `docker-compose.yml`) → `http://localhost:8080`
+
+Verify running containers:
+
+```bash
+docker ps
+```
+
+---
+
+### Notes
+
+* If **MySQL is already running locally**, update the MySQL port in both `docker-compose.yml` and `.env`.
+* After making changes, restart containers:
+
+  ```bash
+  docker-compose up -d
+  ```
+* To stop containers:
+
+  ```bash
+  docker-compose down
+  ```
+* To rebuild containers:
+
+  ```bash
+  docker-compose up --build -d
+  ```
+
+
 
 
 ## Install Using GUI Installer

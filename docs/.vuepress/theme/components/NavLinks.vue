@@ -178,7 +178,6 @@ export default {
     },
 
     userGuide () {
-      console.log( this.$site.themeConfig);
 
       const { userGuide } = this.$site.themeConfig;
 
