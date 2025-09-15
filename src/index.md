@@ -13,7 +13,9 @@ hero:
     - theme: alt
       text: Contribute on GitHub
       link: https://github.com/unopim/unopim
-
+  image:
+    src: /home-logo.png
+    alt: UnoPim
 features:
   - title: Installation
     details: Learn how to install, configure, and customize UnoPim packages, including setup and code-level modifications.

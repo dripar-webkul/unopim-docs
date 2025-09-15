@@ -41,15 +41,15 @@ export default defineConfig({
       { text: 'User Guide', link: 'https://docs.unopim.com/' },
       { text: 'Contact Us', link: 'https://unopim.com/en/contacts/' },
       { text: 'Contribute', link: 'https://github.com/unopim/unopim' },
-      {
-        text: 'Version',
-        items: [
-          { text: 'Master', link: '/master/prologue/' },
-          { text: '0.1', link: '/0.1/prologue/' },
-          { text: '0.2', link: '/0.2/prologue/' },
-          { text: '0.3', link: '/0.3/prologue/' },
-        ]
-      },
+      // {
+      //   text: 'Version',
+      //   items: [
+      //     { text: 'Master', link: '/master/prologue/' },
+      //     { text: '0.1', link: '/0.1/prologue/' },
+      //     { text: '0.2', link: '/0.2/prologue/' },
+      //     { text: '0.3', link: '/0.3/prologue/' },
+      //   ]
+      // },
     ],
 
     editLink: {

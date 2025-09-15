@@ -1,7 +1,6 @@
 # Installation
 
 
-
 ## Install Using Composer
 
 To install UnoPim using Composer, use the following steps:
@@ -57,7 +56,7 @@ To install UnoPim using Composer, use the following steps:
 
 ## Install Using Docker
 
-### Prerequisites
+<!-- ### Prerequisites
 
 Make sure **Docker** and **Docker Compose** are installed:
 
@@ -132,9 +131,225 @@ docker ps
 
   ```bash
   docker-compose up --build -d
-  ```
+  ``` -->
 
 
+
+###  Prerequisites
+
+Make sure the following are installed on your system:
+
+* **Docker** (latest version)
+* **Docker Compose** (for Method 2)
+
+Verify installation:
+
+```bash
+docker --version
+docker-compose --version
+```
+
+
+### Method 1: Using Docker Hub (Quick Setup - Recommended)
+
+This is the **fastest way** to get UnoPim running.
+
+#### Step 1: Pull UnoPim Docker Image
+
+```bash
+docker pull webkul/unopim:v0.3.2
+```
+
+#### Step 2: Run the Container
+
+```bash
+docker run -it -d --name unopim_container -p 80:80 webkul/unopim:v0.3.2
+```
+
+If port `80` is already in use, you can map to another port (e.g. `8082`):
+
+```bash
+docker run -it -d --name unopim_container -p 8082:80 webkul/unopim:v0.3.2
+```
+
+Then access UnoPim at:
+**`http://localhost:8082`**
+
+
+#### Step 3: Access UnoPim
+
+Open your browser and visit:
+ **`http://localhost`**
+
+**Default Admin Credentials**
+(for UnoPim v0.3.2 and newer):
+
+| Version Range    | Username                                          | Password     |
+| ---------------- | ------------------------------------------------- | ------------ |
+| v0.3.2 (Latest)  | `admin@example.com`                               | admin123     |
+| v0.3.0 – v0.3.1  | `admin@example.com`                               | admin\@123   |
+| v0.2.x and below | `johndoe@example.com`                             | JohnDoe\@123 |
+
+---
+
+#### Database Connection (Optional)
+
+| Key           | Value       |
+| ------------- | ----------- |
+| Database Name | `unopim_db` |
+| Username      | `root`      |
+| Password      | `root`      |
+
+---
+
+###  Method 2: Using Docker Compose (For Customization)
+
+This method is ideal if you want **more control** over your UnoPim environment (custom ports, volumes, etc.).
+
+#### Step 1: Clone Repository
+
+Clone the official UnoPim repository:
+
+**HTTPS:**
+
+```bash
+git clone https://github.com/unopim/unopim.git
+```
+
+**SSH:**
+
+```bash
+git clone git@github.com:unopim/unopim.git
+```
+
+#### Step 2: Enter the Project Directory
+
+```bash
+cd unopim
+```
+#### Step 3: Configure `docker-compose.yml`
+
+Edit the `docker-compose.yml` file to adjust ports, database credentials, and service settings if needed.
+
+Here’s the **default configuration** provided with UnoPim:
+
+```yaml
+version: "3"
+
+services:
+  unopim-web:
+    build:
+      context: .
+      dockerfile: dockerfiles/web.Dockerfile
+    container_name: unopim-web
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "8000:80"
+    restart: "no"
+    depends_on:
+      - unopim-mysql
+
+  unopim-mysql:
+    image: mysql:8
+    container_name: unopim-mysql
+    volumes:
+      - unopim-mysql-disk:/var/lib/mysql
+    ports:
+      - "3301:3301"
+    restart: "no"
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: unopim
+
+  unopim-q:
+    build:
+      context: .
+      dockerfile: dockerfiles/q.Dockerfile
+    container_name: unopim-q
+    volumes:
+      - .:/var/www/html
+    restart: unless-stopped
+    depends_on:
+      - unopim-mysql
+
+  unopim-mailpit:
+    image: 'axllent/mailpit:latest'
+    container_name: unopim-mailpit
+    restart: "no"
+    ports:
+      - "8025:8025"
+
+# On-disk storage of DB data, so data persists when containers are stopped
+volumes:
+  unopim-mysql-disk: {}
+```
+
+---
+
+##### Key Notes on This Configuration:
+
+* **unopim-web** → Main application container, exposed on **port 8000**.
+* **unopim-mysql** → MySQL container with database `unopim`.
+
+  * Default root password: `password`
+  * Port is mapped to **3301** (instead of the usual 3306).
+* **unopim-q** → Queue worker container for processing background jobs.
+* **unopim-mailpit** → Mailpit container for local email testing (accessible on `http://localhost:8025`).
+* **Persistent Data** → MySQL data is stored in a named volume (`unopim-mysql-disk`).
+
+
+#### Step 4: Start Docker Containers
+
+```bash
+docker-compose up -d
+```
+
+This will pull the required images, build containers, and set up the environment.
+
+---
+
+#### Step 5: Access Services
+
+| Service               | URL                                            |
+| --------------------- | ---------------------------------------------- |
+| UnoPim App            | `http://localhost:8000`                        |
+| MySQL                 | localhost:3306                                 |
+| PHPMyAdmin (Optional) | `http://localhost:8080`                       |
+
+Verify running containers:
+
+```bash
+docker ps
+```
+
+---
+
+### Managing Services
+
+Stop containers:
+
+```bash
+docker-compose down
+```
+
+Restart containers:
+
+```bash
+docker-compose up -d
+```
+
+Rebuild containers (if configuration changes):
+
+```bash
+docker-compose up --build -d
+```
+
+### 💡 Notes & Tips
+
+* If MySQL is already running locally, change the MySQL container port in `docker-compose.yml` and `.env` file.
+* For production, you can configure **persistent volumes** for MySQL data.
+* Always restart containers after making `.env` or `docker-compose.yml` changes.
 
 
 ## Install Using GUI Installer

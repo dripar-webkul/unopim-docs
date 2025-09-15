@@ -4,9 +4,12 @@
 
 :root {
   /* Brand Colors */
-  --vp-c-brand: #8b5cf6; /* Primary accent */
-  --vp-c-brand-light: #9f67ff; /* Hover/light variant */
-  --vp-c-brand-dark: #5a1bb1; /* Darker variant */
+  --vp-c-brand: #8b5cf6;
+  /* Primary accent */
+  --vp-c-brand-light: #9f67ff;
+  /* Hover/light variant */
+  --vp-c-brand-dark: #5a1bb1;
+  /* Darker variant */
 
   /* Backgrounds and Borders */
   --vp-c-border: #e1e1e1;
@@ -29,21 +32,18 @@
 
   /* Hero Section Colors (Gradient & Background) */
   --vp-home-hero-name-color: transparent;
-  --vp-home-hero-name-background: linear-gradient(
-    120deg,
-    var(--vp-c-brand) 30%,
-    var(--vp-c-brand-light)
-  );
-  --vp-home-hero-image-background-image: linear-gradient(
-    -45deg,
-    var(--vp-c-brand) 50%,
-    var(--vp-c-brand-light) 50%
-  );
+  --vp-home-hero-name-background: linear-gradient(120deg,
+      var(--vp-c-brand) 30%,
+      var(--vp-c-brand-dark) 70%);
+  /* --vp-home-hero-name-background: linear-gradient(120deg, #8b5cf6 30%, #4b00cc): linear-gradient(120deg, #8b5cf6 30%, #4b00cc); */
+  --vp-home-hero-image-background-image: linear-gradient(-45deg,
+      var(--vp-c-brand) 50%,
+      var(--vp-c-brand-light) 50%);
   --vp-home-hero-image-filter: blur(44px);
 
   /* Button Colors */
   --vp-button-brand-bg: var(--vp-c-brand);
-  --vp-button-brand-border: var(--vp-c-brand-dark);
+  /* --vp-button-brand-border: var(--vp-c-brand-dark); */
   --vp-button-brand-text: #ffffff;
   --vp-button-brand-hover-bg: var(--vp-c-brand-light);
   --vp-button-brand-hover-border: var(--vp-c-brand-light);
@@ -56,6 +56,7 @@
     --vp-home-hero-image-filter: blur(56px);
   }
 }
+
 @media (min-width: 960px) {
   :root {
     --vp-home-hero-image-filter: blur(68px);
@@ -90,6 +91,7 @@
   color: var(--vp-button-brand-text) !important;
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
+
 .VPButton.brand:hover {
   background-color: var(--vp-button-brand-hover-bg) !important;
   border-color: var(--vp-button-brand-hover-border) !important;
@@ -104,6 +106,7 @@
   text-underline-offset: 2px;
   transition: color 0.25s, opacity 0.25s;
 }
+
 .vp-doc a:hover {
   color: var(--vp-c-brand-light);
   opacity: 0.9;
@@ -112,7 +115,7 @@
 
 
 .pager-link:hover {
-  border-color: var(--vp-c-brand) !important; /* Force UnoPim brand border */
+  border-color: var(--vp-c-brand) !important;
 }
 
 .title {
@@ -120,7 +123,8 @@
   line-height: 20px;
   font-size: 14px;
   font-weight: 500;
-  color: var(--vp-c-brand) !important; /* Force brand color */
+  color: var(--vp-c-brand) !important;
+  /* Force brand color */
   transition: color 0.25s;
 }
 
@@ -131,51 +135,57 @@
   line-height: 32px;
   font-size: 14px;
   font-weight: 500;
-  color: var(--vp-c-brand) !important; /* Force brand color */
+  color: var(--vp-c-brand) !important;
+  /* Force brand color */
   transition: color 0.25s;
 }
 
 .edit-link-button:hover {
-  color: var(--vp-c-brand-light) !important; /* Force hover color */
+  color: var(--vp-c-brand-light) !important;
+  /* Force hover color */
 }
 
-.VPSidebarItem.level-0.is-link > .item > .link:hover .text,
-.VPSidebarItem.level-1.is-link > .item > .link:hover .text,
-.VPSidebarItem.level-2.is-link > .item > .link:hover .text,
-.VPSidebarItem.level-3.is-link > .item > .link:hover .text,
-.VPSidebarItem.level-4.is-link > .item > .link:hover .text,
-.VPSidebarItem.level-5.is-link > .item > .link:hover .text {
-  color: var(--vp-c-brand-light) !important; /* Force sidebar hover color */
+.VPSidebarItem.level-0.is-link>.item>.link:hover .text,
+.VPSidebarItem.level-1.is-link>.item>.link:hover .text,
+.VPSidebarItem.level-2.is-link>.item>.link:hover .text,
+.VPSidebarItem.level-3.is-link>.item>.link:hover .text,
+.VPSidebarItem.level-4.is-link>.item>.link:hover .text,
+.VPSidebarItem.level-5.is-link>.item>.link:hover .text {
+  color: var(--vp-c-brand-light) !important;
 }
 
 
-.VPSidebarItem.level-0.is-active > .item .link > .text,
-.VPSidebarItem.level-1.is-active > .item .link > .text,
-.VPSidebarItem.level-2.is-active > .item .link > .text,
-.VPSidebarItem.level-3.is-active > .item .link > .text,
-.VPSidebarItem.level-4.is-active > .item .link > .text,
-.VPSidebarItem.level-5.is-active > .item .link > .text {
-  color: var(--vp-c-brand) !important; /* Force UnoPim brand color for active state */
-  font-weight: 600; /* Optional: make active link stand out */
+.VPSidebarItem.level-0.is-active>.item .link>.text,
+.VPSidebarItem.level-1.is-active>.item .link>.text,
+.VPSidebarItem.level-2.is-active>.item .link>.text,
+.VPSidebarItem.level-3.is-active>.item .link>.text,
+.VPSidebarItem.level-4.is-active>.item .link>.text,
+.VPSidebarItem.level-5.is-active>.item .link>.text {
+  color: var(--vp-c-brand) !important;
+  font-weight: 600;
 }
 
 
 
 .VPNavBarMenuLink:hover {
-  color: var(--vp-c-brand-light) !important; /* Hover color matches UnoPim brand */
+  color: var(--vp-c-brand-light) !important;
+  /* Hover color matches UnoPim brand */
 }
 
 .VPNavBarMenuLink.active {
-  color: var(--vp-c-brand) !important; /* Active link = main brand color */
-  font-weight: 600; /* Optional highlight */
+  color: var(--vp-c-brand) !important;
+  /* Active link = main brand color */
+  font-weight: 600;
+  /* Optional highlight */
 }
 
 .VPNavBarMenuLink.active:hover {
-  color: var(--vp-c-brand-light) !important; /* Light variant when hovering active link */
+  color: var(--vp-c-brand-light) !important;
+  /* Light variant when hovering active link */
 }
 
 .VPFlyout.active .text[data-v-5691862c] {
-    color: var(--vp-c-brand) !important;
+  color: var(--vp-c-brand) !important;
 }
 
 
@@ -190,20 +200,17 @@
 }
 
 
-/* ===========================
-   Center Hero Section (UnoPim)
-   =========================== */
-.VPHero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
+.VPFeature.link[data-v-549c013f]:hover {
+  border-color: var(--vp-c-brand) !important;
 }
 
-.VPHero .name
-.VPHero .text,
-.VPHero .tagline,
-.VPHero .actions {
-  text-align: center;
-  justify-content: center;
+
+.outline-marker[data-v-3f9b8864] {
+  background-color: var(--vp-c-brand);
 }
+
+
+.VPDocAsideOutline {
+  scroll-behavior: smooth;
+}
+
