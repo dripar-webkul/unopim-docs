@@ -15,11 +15,11 @@ For all API requests, include the following headers:
 
 ## Get All Attributes
 
-**Endpoint:**
+**Endpoint:**  
 ```
 GET {{url}}/api/v1/rest/attributes
 ```
-**Headers:**
+**Headers:**  
 Use the [Common Headers](#common-headers).
 
 ### Query Parameters
@@ -32,33 +32,33 @@ Use the [Common Headers](#common-headers).
 
 #### Usage Examples
 
-- **Limit:**
+- **Limit:**  
   Retrieves results limited to a specified number.
-
+  
   ```http
   GET {{url}}/api/v1/rest/attributes?limit=10
   ```
 
-- **Page:**
+- **Page:**  
   Fetches the specified page of results.
 
   ```http
   GET {{url}}/api/v1/rest/attributes?page=1
   ```
 
-- **Filters:**
+- **Filters:**  
   Filters refine query results based on specific attribute criteria. You can combine multiple filters to achieve the desired output.
 
   #### Available Filters
 
   1. **code**
-    - **Operators:**
+    - **Operators:** 
       - `=`: Exact match for the specified code.
       - `IN`: Matches any of the codes in the provided list.
       - `NOT IN`: Excludes any of the codes in the provided list.
 
   2. **type**
-    - **Operators:**
+    - **Operators:** 
       - `=`: Exact match for the specified type.
       - `IN`: Matches any of the types in the provided list.
       - `NOT IN`: Excludes any of the types in the provided list.
@@ -75,7 +75,7 @@ Use the [Common Headers](#common-headers).
     {"type":[{"operator":"=","value":"text"}]}
     ```
 
-- **Combined Query:**
+- **Combined Query:**  
   Retrieve a specific page of results with filters applied.
 
   ```http
@@ -122,11 +122,11 @@ The API response will return a JSON object structured as follows:
 
 ## Get an Attribute By Code
 
-**Endpoint:**
+**Endpoint:**  
 ```
 GET {{url}}/api/v1/rest/attributes/{attribute_code}
 ```
-**Headers:**
+**Headers:**  
 Use the [Common Headers](#common-headers).
 
 - **attribute_code**: The unique code for the attribute (e.g., `status`) to fetch details for a specific attribute.
@@ -157,11 +157,11 @@ The response will return a JSON object containing the details of the requested a
 
 ## Create an Attribute
 
-**Endpoint:**
+**Endpoint:**  
 ```
 POST {{url}}/api/v1/rest/attributes
 ```
-**Headers:**
+**Headers:**  
 Use the [Common Headers](#common-headers).
 
 #### Request Body :
@@ -205,11 +205,11 @@ Upon successful creation of the attribute, the API will return a success message
 
 ## Update an Attribute By Code
 
-**Endpoint:**
+**Endpoint:**  
 ```
 PUT {{url}}/api/v1/rest/attributes/{attribute_code}
 ```
-**Headers:**
+**Headers:**  
 Use the [Common Headers](#common-headers).
 
 #### Request Body :

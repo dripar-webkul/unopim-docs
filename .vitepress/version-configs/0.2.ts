@@ -11,7 +11,7 @@ function setVersionPrefix(children: [string, string][]) {
 export default [
   {
     text: 'Prologue',
-    link: `/${version}/prologue/index`,
+    link: `/${version}/prologue/`,
     collapsed: false,
     items: setVersionPrefix([
       ['prologue/upgrade-guide', 'Upgrade Guide'],

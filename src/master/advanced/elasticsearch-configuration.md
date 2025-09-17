@@ -128,7 +128,7 @@ php artisan config:cache
 php artisan unopim:elastic:clear
 ```
 
-⚠️ Deletes all indexed data. Use carefully.
+⚠️ Remove all indexed data and indexes for categories and products.
 
 * **Index Products**
 

@@ -4,16 +4,89 @@
 
 
 ## Introduction
-
-Elasticsearch is a distributed search and analytics engine designed for scalability and real-time data processing. This guide provides the necessary steps to configure and use Elasticsearch in the Unopim project.
+Elasticsearch is a distributed search and analytics engine designed for scalability and real-time data processing.
+This guide provides the necessary steps to **install**, **configure**, and **use Elasticsearch** in the UnoPim project.
 
 ---
 
-## Configuration Steps
+##  Installing Elasticsearch on Ubuntu Server
 
-  1. **Environment Variables**
+Follow the steps below to install Elasticsearch (v8.x) on Ubuntu 22.04 or 24.04:
+
+🔎 **Note:**
+Before proceeding, check if Elasticsearch is already installed:
+
+```bash
+dpkg -l | grep elasticsearch
+# or
+elasticsearch --version
+```
+
+* If a version is displayed → **Elasticsearch is already installed, skip installation.**
+* If no output → **continue with installation.**
+
+
+### Step 1: Install Required Dependencies
+
+```bash
+sudo apt-get update
+sudo apt-get install apt-transport-https curl gnupg -y
+```
+
+### Step 2: Add Elasticsearch GPG Key
+
+```bash
+curl -fsSL https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo gpg --dearmor -o /usr/share/keyrings/elasticsearch-keyring.gpg
+```
+
+### Step 3: Add Elasticsearch Repository
+
+```bash
+echo "deb [signed-by=/usr/share/keyrings/elasticsearch-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-8.x.list
+```
+
+### Step 4: Install Elasticsearch
+
+```bash
+sudo apt-get update
+sudo apt-get install elasticsearch -y
+```
+
+### Step 5: Enable and Start Elasticsearch
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable elasticsearch.service
+sudo systemctl start elasticsearch.service
+sudo systemctl status elasticsearch.service
+```
+
+### Step 6: Verify Installation
+
+```bash
+curl 'http://localhost:9200'
+```
+
+You should see a JSON response with cluster information.
+
+### Step 7: Optimize Linux Kernel Settings
+
+Elasticsearch requires a higher `vm.max_map_count` value. Run:
+
+```bash
+sudo sysctl -w vm.max_map_count=262144
+echo "vm.max_map_count=262144" | sudo tee /etc/sysctl.d/elasticsearch.conf
+sudo systemctl restart elasticsearch
+```
+
+---
+
+##  Configuring UnoPim to Use Elasticsearch
+
+### Environment Variables
 
 Add the following settings to your `.env` file:
+
 ```env
 ELASTICSEARCH_ENABLED=true
 ELASTICSEARCH_CONNECTION=default
@@ -25,51 +98,21 @@ ELASTICSEARCH_CLOUD_ID=
 ELASTICSEARCH_INDEX_PREFIX=unopim_testing
 ```
 
-### Environment Variables
+#### Explanation of Variables
 
-- `ELASTICSEARCH_ENABLED`: Enables or disables the Elasticsearch functionality
-  - Values: `true`/`false`
-  - Default: `false`
-  - Purpose: Controls whether ElasticSearch functionality is active
+* **ELASTICSEARCH\_ENABLED**: Enables or disables Elasticsearch (`true` / `false`)
+* **ELASTICSEARCH\_CONNECTION**: Type of connection (`default`, `cloud`, or `api`)
+* **ELASTICSEARCH\_HOST**: Server location (`localhost:9200` or `elastic.example.com:9200`)
+* **ELASTICSEARCH\_USER / ELASTICSEARCH\_PASS**: Basic auth credentials (optional)
+* **ELASTICSEARCH\_API\_KEY**: Base64-encoded API key (optional)
+* **ELASTICSEARCH\_CLOUD\_ID**: Required only for Elastic Cloud deployments
+* **ELASTICSEARCH\_INDEX\_PREFIX**: Prefix for indices (e.g., `unopim_dev_`, `unopim_prod_`)
 
-- `ELASTICSEARCH_CONNECTION`: Determines the connection type
-  - Values: `default`, `cloud`, `api`
-  - Default: `default`
-  - Purpose: Specifies which connection configuration to use
+---
 
-- `ELASTICSEARCH_HOST`: ElasticSearch server location
-  - Format: `hostname:port`
-  - Default: `localhost:9200`
-  - Example: `localhost:9200` or `elastic.example.com:9200`
+### Cache Configuration
 
-- `ELASTICSEARCH_USER` & `ELASTICSEARCH_PASS`: Basic authentication credentials
-  - Optional: Required only when using username/password authentication
-  - Example:
-    ```
-    ELASTICSEARCH_USER=elastic
-    ELASTICSEARCH_PASS=your_secure_password
-    ```
-
-- `ELASTICSEARCH_API_KEY`: API key-based authentication
-  - Optional: Alternative to username/password authentication
-  - Format: Base64 encoded string
-  - Example: `VnVhQ2ZHY0JDZGJrUW0tZTVhT3g6dWkybHAyYXhUTm1iX0ZmZHM3T0diUQ==`
-
-- `ELASTICSEARCH_CLOUD_ID`: Elastic Cloud deployment identifier
-  - Optional: Required only for Elastic Cloud deployments
-  - Format: `deployment:base64_data`
-  - Example: `deployment:dXMtZWFzdC0xLmF3cy5mb3VuZC5pbzo0NDM=`
-
-- `ELASTICSEARCH_INDEX_PREFIX`: Index naming prefix
-  - Purpose: Separates indices across different environments
-  - Examples:
-    - Development: `unopim_dev_`
-    - Production: `unopim_prod_`
-    - Testing: `unopim_testing`
-
- 2. **Cache Configuration**
-
-After updating the environment variables, run the following command to cache the configuration:
+After updating `.env`, run:
 
 ```bash
 php artisan config:cache
@@ -77,30 +120,23 @@ php artisan config:cache
 
 ---
 
-### **Indexing Commands**
+##  Indexing Commands
 
-  -  Clear Indexes
-
-This command clears all existing Elasticsearch indexes for the Unopim project.
- **Warning:** This will delete all indexed data. Use with caution.
+* **Clear Indexes**
 
 ```bash
 php artisan unopim:elastic:clear
 ```
 
- - Index Products
+⚠️ Remove all indexed data and indexes for categories and products.
 
-This command indexes all products in the database.
-Use it to create or update the product index in Elasticsearch:
+* **Index Products**
 
 ```bash
 php artisan unopim:product:index
 ```
 
- - Index Categories
-
-This command indexes all categories in the database.
-Use it to create or update the category index in Elasticsearch:
+* **Index Categories**
 
 ```bash
 php artisan unopim:category:index

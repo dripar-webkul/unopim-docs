@@ -1,7 +1,6 @@
 # Installation
 
 
-
 ## Install Using Composer
 
 To install UnoPim using Composer, use the following steps:
@@ -57,30 +56,183 @@ To install UnoPim using Composer, use the following steps:
 
 ## Install Using Docker
 
-If you have Docker/Docker Compose installed, follow these steps:
+###  Prerequisites
 
-1. **Clone the repository**:
-   - HTTPS: `git clone https://github.com/unopim/unopim.git`
-   - SSH: `git clone git@github.com:unopim/unopim.git`
+Make sure the following are installed on your system:
 
-2. **Enter the directory**:
-   ```bash
-   cd unopim
-   ```
+* **Docker** (latest version)
+* **Docker Compose** (for Method 2)
 
-3. **Start the Docker containers**:
-   ```bash
-   docker-compose up -d
-   ```
+Verify installation:
 
-   This will pull the necessary images and set up the environment. Once running, access the application at:
+```bash
+docker --version
+docker-compose --version
+```
 
-   - Application: `http://localhost:8000`
-   - MySQL: `http://localhost:3306`
 
-> **Note**:
-> If MySQL is already running on your system, change the MySQL port in the `docker-compose.yml` and `.env` files.
-> Run `docker-compose up -d` again to apply changes.
+### Method 1: Using Docker Hub (Quick Setup - Recommended)
+
+This is the **fastest way** to get UnoPim running.
+
+#### Step 1: Pull UnoPim Docker Image
+
+```bash
+docker pull webkul/unopim:v0.3.2
+```
+
+#### Step 2: Run the Container
+
+```bash
+docker run -it -d --name unopim_container -p 80:80 webkul/unopim:v0.3.2
+```
+
+If port `80` is already in use, you can map to another port (e.g. `8082`):
+
+```bash
+# Stop the container if it is already running
+docker stop unopim_container
+
+# Remove the container so you can recreate it cleanly
+docker rm unopim_container
+
+# Run a new container on port 8082 instead of 80
+docker run -it -d --name unopim_container -p 8082:80 webkul/unopim:v0.3.2
+```
+
+
+Then access UnoPim at:
+**`http://localhost:8082`**
+
+
+#### Step 3: Access UnoPim
+
+Open your browser and visit:
+ **`http://localhost`**
+
+**Default Admin Credentials**
+(for UnoPim v0.3.2 and newer):
+
+| Version Range    | Username                                          | Password     |
+| ---------------- | ------------------------------------------------- | ------------ |
+| v0.3.2 (Latest)  | `admin@example.com`                               | admin123     |
+| v0.3.0 – v0.3.1  | `admin@example.com`                               | admin\@123   |
+| v0.2.x and below | `johndoe@example.com`                             | JohnDoe\@123 |
+
+---
+
+#### Database Connection (Optional)
+
+| Key           | Value       |
+| ------------- | ----------- |
+| Database Name | `unopim_db` |
+| Username      | `root`      |
+| Password      | `root`      |
+
+---
+
+###  Method 2: Using Docker Compose (For Customization)
+
+This method is ideal if you want **more control** over your UnoPim environment (custom ports, volumes, etc.).
+
+#### Step 1: Clone Repository
+
+Clone the official UnoPim repository:
+
+**HTTPS:**
+
+```bash
+git clone https://github.com/unopim/unopim.git
+```
+
+**SSH:**
+
+```bash
+git clone git@github.com:unopim/unopim.git
+```
+
+#### Step 2: Enter the Project Directory
+
+```bash
+cd unopim
+```
+
+
+#### Step 3: Configure `.env` (before starting containers)
+
+Create a `.env` file by copying the provided example:
+
+```bash
+cp .env.example .env
+```
+
+Then, open `.env` in your editor and update the database configuration for Docker:
+
+```dotenv
+DB_CONNECTION=mysql
+DB_HOST=unopim-mysql
+DB_PORT=3306
+DB_DATABASE=unopim
+DB_USERNAME=root
+DB_PASSWORD=password
+DB_PREFIX=
+```
+
+> 💡 These values match the services defined in `docker-compose.yml`.
+> You can adjust them if you change container names, ports, or credentials.
+
+Once you’ve saved the file, proceed to **Step 4** to start the containers.
+
+#### Step 4: Start Docker Containers
+
+```bash
+docker-compose up -d
+```
+
+This will pull the required images, build containers, and set up the environment.
+
+---
+
+#### Step 5: Access Services
+
+| Service               | URL                                            |
+| --------------------- | ---------------------------------------------- |
+| UnoPim App            | `http://localhost:8000`                        |
+| MySQL                 | localhost:3306                                 |
+
+Verify running containers:
+
+```bash
+docker ps
+```
+
+---
+
+### Managing Services
+
+Stop containers:
+
+```bash
+docker-compose down
+```
+
+Restart containers:
+
+```bash
+docker-compose up -d
+```
+
+Rebuild containers (if configuration changes):
+
+```bash
+docker-compose up --build -d
+```
+
+### 💡 Notes & Tips
+
+* If MySQL is already running locally, change the MySQL container port in `docker-compose.yml` and `.env` file.
+* For production, you can configure **persistent volumes** for MySQL data.
+* Always restart containers after making `.env` or `docker-compose.yml` changes.
 
 
 ## Install Using GUI Installer
@@ -305,11 +457,18 @@ To access UnoPim on your local server, follow these steps:
 
 3. Open your browser and access the provided local server URL.
 
+
 ## Configure the Virtual Host
 
-### Creating the Virtual Host File
+Depending on your web server, you can configure UnoPim with either **Apache 2** or **NGINX**.
 
-This guide explains how to create and configure a virtual host for Apache to point to the installation folder of UnoPIM, Create the file **`/etc/apache2/sites-available/unopim.local.conf`**:
+---
+
+### Configure Using Apache 2
+
+#### Creating the Virtual Host File
+
+Create the file **`/etc/apache2/sites-available/unopim.local.conf`**:
 
 ```apache
 <VirtualHost *:80>
@@ -333,26 +492,96 @@ This guide explains how to create and configure a virtual host for Apache to poi
     CustomLog ${APACHE_LOG_DIR}/unopim_access.log combined
 </VirtualHost>
 ```
-Notes:
-- Replace **`/path/to/installation`** with the actual path where UnoPIM is installed.
-- Ensure that **`/run/php/php8.2-fpm.sock`** matches the socket path defined in **`/etc/php/8.2/fpm/pool.d/www.conf`**. Update this value if it differs.
 
-### Enabling the Virtual Host
+**Notes**:
 
-Run the following commands to enable the virtual host:
+* Replace **`/path/to/installation`** with the actual path where UnoPim is installed.
+* Ensure that **`/run/php/php8.2-fpm.sock`** matches the socket path defined in **`/etc/php/8.2/fpm/pool.d/www.conf`**.
 
-   ```bash
-   $ sudo apache2ctl configtest
-    # This will return 'Syntax OK'
+#### Enabling the Virtual Host
 
-   $ sudo a2ensite unopim.local
-   $ sudo service apache2 reload
-   ```
-### Adding the Virtual Host Name
+```bash
+sudo apache2ctl configtest   # should return "Syntax OK"
+sudo a2ensite unopim.local
+sudo service apache2 reload
+```
 
-Add the following entry to your **`/etc/hosts`** file:
+#### Adding the Virtual Host Name
 
-   ```
-    127.0.0.1    unopim.local
-   ```
-Your virtual host configuration for UnoPIM is now complete. Visit **`http://unopim.local`** in your browser to access the application.
+Edit your **`/etc/hosts`** file:
+
+```
+127.0.0.1    unopim.local
+```
+
+Now open **`http://unopim.local`** in your browser to access UnoPim.
+
+---
+
+### Configure Using NGINX
+
+#### Creating the Virtual Host File
+
+Create the file **`/etc/nginx/sites-available/unopim.local.conf`**:
+
+```nginx
+server {
+    listen 80;
+    server_name unopim.local;   # Replace with your dev domain or server IP
+
+    root /home/unopim/html/unopim/public;   # UnoPim document root
+    index index.php index.html index.htm;
+
+    # Handle static files (CSS, JS, images)
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    # Handle PHP requests
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php8.2-fpm.sock;   # Adjust PHP-FPM socket if needed
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    # Deny access to hidden files like .htaccess
+    location ~ /\.ht {
+        deny all;
+    }
+
+    error_log /var/log/nginx/unopim_error.log;
+    access_log /var/log/nginx/unopim_access.log;
+}
+```
+
+**Notes**:
+
+* Replace **`/home/unopim/html/unopim/public`** with your actual UnoPim installation path if different.
+* Make sure PHP-FPM is running (`php8.2-fpm` by default).
+
+---
+
+#### Enabling the Virtual Host
+
+```bash
+sudo ln -s /etc/nginx/sites-available/unopim.local.conf /etc/nginx/sites-enabled/
+sudo rm -f /etc/nginx/sites-enabled/default   # remove default config
+sudo nginx -t   # test config
+sudo systemctl reload nginx
+```
+
+---
+
+#### Adding the Virtual Host Name
+
+Add this entry to your **`/etc/hosts`** file on your server (and local machine if testing from there):
+
+```
+127.0.0.1    unopim.local
+```
+
+---
+
+
+Now open **`http://unopim.local`** in your browser to access UnoPim.

@@ -214,3 +214,20 @@
   scroll-behavior: smooth;
 }
 
+.link[data-v-6c4a3ffe] {
+  display: inline-block;
+  border: 1px solid var(--vp-c-brand);
+  border-radius: 16px;
+  padding: 3px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--vp-c-brand);
+  background-color: transparent;
+  transition: background-color 0.25s, border-color 0.25s, color 0.25s;
+}
+
+.link[data-v-6c4a3ffe]:hover {
+  border-color: var(--vp-c-brand-light);
+  background-color: var(--vp-c-brand-light);
+  color: #fff; /* White text on hover */
+}

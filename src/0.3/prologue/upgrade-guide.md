@@ -3,7 +3,7 @@
 
 
 ## Overview
-This guide will help you upgrade your Unopim installation to version 0.3. Please follow these instructions carefully to ensure a smooth upgrade process.
+This guide will help you upgrade your Unopim installation to version 0.3.0. Please follow these instructions carefully to ensure a smooth upgrade process.
 
 ## Pre-upgrade Checklist
 -  Backup your entire project
@@ -22,7 +22,7 @@ mysqldump -u your_db_user -p your_db_name > unopim_backup.sql
 
 ### 2. Download New Version
 Download Unopim v0.3.0 from one of these sources:
-- [GitHub Release v0.3.0](https://github.com/unopim/unopim/archive/refs/tags/v0.3.1.zip)
+- [GitHub Release v0.3.0](https://github.com/unopim/unopim/archive/refs/tags/v0.3.0.zip)
 - [Official Website](https://unopim.com/download)
 
 ### 3. Update Project Files

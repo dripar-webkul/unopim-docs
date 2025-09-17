@@ -1,14 +1,6 @@
 // .vitepress/version-configs/master.ts
 let version = 'master'
 
-// function setVersionPrefix(children: [string, string][]) {
-//   return children.map(child => ({
-//     text: child[1],
-//     link: `/${version}/${child[0]}`
-//   }))
-// }
-
-
 export default function getMasterSidebar(version: string) {
   function setVersionPrefix(children: [string, string][]) {
     return children.map(child => ({
@@ -19,7 +11,7 @@ export default function getMasterSidebar(version: string) {
   return [
     {
       text: 'Prologue',
-      link: `/${version}/prologue/index`,
+      link: `/${version}/prologue/`,
       collapsed: false,
       items: setVersionPrefix([
         ['prologue/upgrade-guide', 'Upgrade Guide'],

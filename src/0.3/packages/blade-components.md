@@ -324,6 +324,7 @@ When working with saved values where only codes are stored (instead of complete 
 1. Single Value Example:
 ```html
 @php
+
 $value = "size"
 @endphp
 
@@ -341,6 +342,7 @@ async=true
 2. Multiple Values Example:
 ```html
 @php
+
 $value = "size,color,time"
 @endphp
 
