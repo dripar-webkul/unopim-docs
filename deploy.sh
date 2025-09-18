@@ -7,7 +7,7 @@ set -e
 npm run docs:build
 
 # navigate into the build output directory
-cd docs/.vuepress/dist
+cd .vitepress/dist
 
 echo 'devdocs.unopim.com' > CNAME
 

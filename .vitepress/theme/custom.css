@@ -1,0 +1,233 @@
+/* ===========================
+   UnoPim Custom VitePress Theme
+   =========================== */
+
+:root {
+  /* Brand Colors */
+  --vp-c-brand: #8b5cf6;
+  /* Primary accent */
+  --vp-c-brand-light: #9f67ff;
+  /* Hover/light variant */
+  --vp-c-brand-dark: #5a1bb1;
+  /* Darker variant */
+
+  /* Backgrounds and Borders */
+  --vp-c-border: #e1e1e1;
+  --vp-c-bg-code: #282c34;
+
+  /* Badge Colors */
+  --vp-c-badge-tip: #42b983;
+  --vp-c-badge-warning: #c4a300;
+  --vp-c-badge-error: #da596;
+
+  /* Typography Colors */
+  --vp-c-h1: #414361;
+  --vp-c-h2: #4f5176;
+
+  /* Layout Variables */
+  --vp-nav-height: 3.6rem;
+  --vp-sidebar-width: 20rem;
+  --vp-content-width: 960px;
+  --vp-home-width: 960px;
+
+  /* Hero Section Colors (Gradient & Background) */
+  --vp-home-hero-name-color: transparent;
+  --vp-home-hero-name-background: linear-gradient(120deg,
+      var(--vp-c-brand) 30%,
+      var(--vp-c-brand-dark) 70%);
+  /* --vp-home-hero-name-background: linear-gradient(120deg, #8b5cf6 30%, #4b00cc): linear-gradient(120deg, #8b5cf6 30%, #4b00cc); */
+  --vp-home-hero-image-background-image: linear-gradient(-45deg,
+      var(--vp-c-brand) 50%,
+      var(--vp-c-brand-light) 50%);
+  --vp-home-hero-image-filter: blur(44px);
+
+  /* Button Colors */
+  --vp-button-brand-bg: var(--vp-c-brand);
+  /* --vp-button-brand-border: var(--vp-c-brand-dark); */
+  --vp-button-brand-text: #ffffff;
+  --vp-button-brand-hover-bg: var(--vp-c-brand-light);
+  --vp-button-brand-hover-border: var(--vp-c-brand-light);
+  --vp-button-brand-hover-text: #ffffff;
+}
+
+/* Responsive adjustments for hero blur */
+@media (min-width: 640px) {
+  :root {
+    --vp-home-hero-image-filter: blur(56px);
+  }
+}
+
+@media (min-width: 960px) {
+  :root {
+    --vp-home-hero-image-filter: blur(68px);
+  }
+}
+
+/* Logo Styling */
+.logo {
+  width: 100px !important;
+  height: auto !important;
+}
+
+/* Hero Image Enhancements */
+.VPHero .VPImage {
+  filter: drop-shadow(-2px 4px 6px rgba(0, 0, 0, 0.2));
+  padding: 18px;
+  scale: 1.2;
+}
+
+/* Ensure Hero Name Uses Gradient */
+.clip {
+  background: var(--vp-home-hero-name-background);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+
+.VPButton.brand {
+  background-color: var(--vp-button-brand-bg) !important;
+  border: 1px solid var(--vp-button-brand-border) !important;
+  color: var(--vp-button-brand-text) !important;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.VPButton.brand:hover {
+  background-color: var(--vp-button-brand-hover-bg) !important;
+  border-color: var(--vp-button-brand-hover-border) !important;
+  color: var(--vp-button-brand-hover-text) !important;
+}
+
+
+.vp-doc a {
+  font-weight: 500;
+  color: var(--vp-c-brand);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.25s, opacity 0.25s;
+}
+
+.vp-doc a:hover {
+  color: var(--vp-c-brand-light);
+  opacity: 0.9;
+}
+
+
+
+.pager-link:hover {
+  border-color: var(--vp-c-brand) !important;
+}
+
+.title {
+  display: block;
+  line-height: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--vp-c-brand) !important;
+  /* Force brand color */
+  transition: color 0.25s;
+}
+
+.edit-link-button {
+  display: flex;
+  align-items: center;
+  border: 0;
+  line-height: 32px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--vp-c-brand) !important;
+  /* Force brand color */
+  transition: color 0.25s;
+}
+
+.edit-link-button:hover {
+  color: var(--vp-c-brand-light) !important;
+  /* Force hover color */
+}
+
+.VPSidebarItem.level-0.is-link>.item>.link:hover .text,
+.VPSidebarItem.level-1.is-link>.item>.link:hover .text,
+.VPSidebarItem.level-2.is-link>.item>.link:hover .text,
+.VPSidebarItem.level-3.is-link>.item>.link:hover .text,
+.VPSidebarItem.level-4.is-link>.item>.link:hover .text,
+.VPSidebarItem.level-5.is-link>.item>.link:hover .text {
+  color: var(--vp-c-brand-light) !important;
+}
+
+
+.VPSidebarItem.level-0.is-active>.item .link>.text,
+.VPSidebarItem.level-1.is-active>.item .link>.text,
+.VPSidebarItem.level-2.is-active>.item .link>.text,
+.VPSidebarItem.level-3.is-active>.item .link>.text,
+.VPSidebarItem.level-4.is-active>.item .link>.text,
+.VPSidebarItem.level-5.is-active>.item .link>.text {
+  color: var(--vp-c-brand) !important;
+  font-weight: 600;
+}
+
+
+
+.VPNavBarMenuLink:hover {
+  color: var(--vp-c-brand-light) !important;
+  /* Hover color matches UnoPim brand */
+}
+
+.VPNavBarMenuLink.active {
+  color: var(--vp-c-brand) !important;
+  /* Active link = main brand color */
+  font-weight: 600;
+  /* Optional highlight */
+}
+
+.VPNavBarMenuLink.active:hover {
+  color: var(--vp-c-brand-light) !important;
+  /* Light variant when hovering active link */
+}
+
+.VPFlyout.active .text[data-v-5691862c] {
+  color: var(--vp-c-brand) !important;
+}
+
+
+.link.active[data-v-6c4f796b] {
+  color: var(--vp-c-brand) !important;
+}
+
+.link[data-v-6c4f796b]:hover {
+  color: var(--vp-c-brand-light) !important;
+  background-color: var(--vp-c-brand-light-hover, var(--vp-c-default-soft)) !important;
+
+}
+
+
+.VPFeature.link[data-v-549c013f]:hover {
+  border-color: var(--vp-c-brand) !important;
+}
+
+
+.outline-marker[data-v-3f9b8864] {
+  background-color: var(--vp-c-brand);
+}
+
+
+.VPDocAsideOutline {
+  scroll-behavior: smooth;
+}
+
+.link[data-v-6c4a3ffe] {
+  display: inline-block;
+  border: 1px solid var(--vp-c-brand);
+  border-radius: 16px;
+  padding: 3px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--vp-c-brand);
+  background-color: transparent;
+  transition: background-color 0.25s, border-color 0.25s, color 0.25s;
+}
+
+.link[data-v-6c4a3ffe]:hover {
+  border-color: var(--vp-c-brand-light);
+  background-color: var(--vp-c-brand-light);
+  color: #fff; /* White text on hover */
+}
