@@ -16,6 +16,9 @@ This API allows you to upload media files (such as images) associated with eithe
 ---
 
 ## Product Media Upload
+::: info Gallery Attribute file type support
+Gallery-type attributes now support video files along with images. This API can be used to upload both images and videos, but only when the target attribute is of type gallery.
+:::
 
 **Endpoints:**
 - **Product Media Upload**

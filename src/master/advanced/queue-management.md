@@ -36,7 +36,7 @@ Basic queue management commands:
 
 ```bash
 # Start the queue worker
-php artisan queue:work
+php artisan queue:work --queue="default,system"
 
 # Restart queue workers (after code changes)
 php artisan queue:restart

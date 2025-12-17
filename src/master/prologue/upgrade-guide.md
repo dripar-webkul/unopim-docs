@@ -3,7 +3,7 @@
 
 
 ## Overview
-This guide will help you upgrade your Unopim installation to version 0.3.0. Please follow these instructions carefully to ensure a smooth upgrade process.
+This guide will help you upgrade your Unopim installation to version [1.0.0](https://github.com/unopim/unopim/releases/tag/v1.0.0). Please follow these instructions carefully to ensure a smooth upgrade process.
 
 ## Pre-upgrade Checklist
 -  Backup your entire project
@@ -21,8 +21,8 @@ mysqldump -u your_db_user -p your_db_name > unopim_backup.sql
 ```
 
 ### 2. Download New Version
-Download Unopim v0.3.0 from one of these sources:
-- [GitHub Release v0.3.0](https://github.com/unopim/unopim/archive/refs/tags/v0.3.0.zip)
+Download Unopim v1.0.0 from one of these sources:
+- [GitHub Release v1.0.0](https://github.com/unopim/unopim/archive/refs/tags/v1.0.0.zip)
 - [Official Website](https://unopim.com/download)
 
 ### 3. Update Project Files
@@ -31,52 +31,77 @@ Update your project files with the new version. You can do this by extracting th
 
 ```bash
 # Extract the new version to your desired location
-unzip unopim-0.3.0.zip
+unzip unopim-1.0.0.zip
 ```
 
 **Copy your existing configuration and data:**
 
-Copy the `.env` file and storage folder from your current UnoPim installation to the new `unopim-0.3.0` folder:
+Copy the `.env` file and storage folder from your current UnoPim installation to the new `unopim-1.0.0` folder:
 
 ```bash
 # Copy your environment file from current installation
-cp /path/to/current/unopim/.env unopim-0.3.0/
+cp /path/to/current/unopim/.env unopim-1.0.0/
 
 # Copy storage directory from current installation
-cp -r /path/to/current/unopim/storage/* unopim-0.3.0/storage/
+cp -r /path/to/current/unopim/storage/* unopim-1.0.0/storage/
 ```
 
 **Navigate to the new directory:**
 
-Open terminal at the path of the new `unopim-0.3.0` directory (e.g., `unopim-0.3.0`) and run the commands in the following steps.
+Open terminal at the path of the new `unopim-1.0.0` directory (e.g., `unopim-1.0.0`) and run the commands in the following steps.
 
-**Note:** The upgrade will be completed in this new `unopim-0.3.0` folder. After successful upgrade and testing, you can either:
+::: tip **Note**
+ The upgrade will be completed in this new `unopim-1.0.0` folder. After successful upgrade and testing, you can either:
 - Rename the new folder to replace your current installation
 - Move the upgraded installation to your required path
 - Update your web server configuration to point to the new directory
+:::
 
 ### 4. Install Dependencies
-Make sure you have Composer installed. Navigate to the new Unopim directory and run:
+
+Make sure you have Composer installed. Navigate to the new UnoPim directory and run:
+
 ```bash
-cd unopim-0.3.0
+cd unopim-1.0.0
 composer install
 ```
 
 ### 5. Database Updates
+
 If there are any new migrations or database changes, run the following command to update your database schema:
+
 ```bash
 php artisan migrate
 ```
 
 ### 6. Clear Cache and Optimize
+
 Clear any cached configurations and optimize your application:
+
 ```bash
 php artisan optimize:clear
 php artisan storage:link
 ```
+### 7. Update Queue Worker Configuration
 
-### 7. Restart Services
-If you are using a process manager like Supervisor , restart the services to apply the changes.
+Update your queue worker configuration to listen to both the `default` and `system` queues by adding the following option:
+
+```bash
+--queue="default,system"
+```
+
+**Updated Command:**
+
+```bash
+php artisan queue:work --queue="default,system"
+```
+
+If you are using Supervisor, ensure this option is added to the worker command in your Supervisor configuration file.
+
+### 8. Restart Services
+
+If you are using a process manager like Supervisor, restart the services to apply the changes:
+
 ```bash
 # If using Supervisor
 sudo supervisorctl restart unopim-worker

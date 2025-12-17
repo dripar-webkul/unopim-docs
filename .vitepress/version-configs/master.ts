@@ -25,6 +25,7 @@ export default function getMasterSidebar(version: string) {
       items: setVersionPrefix([
         ['introduction/requirements', 'Requirements'],
         ['introduction/installation', 'Installation'],
+        ['introduction/installation-with-postgresql', 'Installation With PostgreSql'],
         ['introduction/creating-newuser', 'Creating a New User'],
         ['introduction/configuring_supervisor', 'Configuring Supervisor'],
       ])

@@ -71,6 +71,17 @@ The **Category** package manages the database logic related to product categorie
     - Set category attributes such as name, description, and URL keys.
     - Enable or disable categories as needed.
 
+### Completeness
+
+The **Completeness** package manages the logic related to product completeness scores. It calculates and tracks product completeness, including configuration for calculation and the actual computation, helping ensure complete and accurate product information.
+
+#### Key Features of the Completeness Package
+
+- **Product Completeness Management**
+    - Manage configuration for calculating product completeness.
+    - Calculate product completeness scores on product updates.
+    - Handle product completeness calculation during bulk updates.
+
 ### Core
 
 The **Core** package serves as the foundation for various functionalities and utilities essential for the operation of the UnoPim platform. It provides critical components, settings, configurations, and common helper functions used across other packages.
@@ -127,6 +138,12 @@ The **Installer** package simplifies the installation process of the UnoPim plat
 
 The **MagicAI** package integrates AI-based functionalities into UnoPim, offering tools to enhance efficiency and decision-making processes based on product data.
 
+#### Key Features of the MagicAI Package
+
+* Translate product attribute values using AI
+* Manage reusable prompts for applying AI across multiple products and attributes
+* Configure system prompts and model settings, such as maximum token limits and model personality using a prompt
+
 ### Notification
 
 The **Notification** package manages system notifications and alerts, enabling administrators to receive automated updates based on product data changes and other key events.
@@ -138,3 +155,7 @@ The **Product** package in UnoPim manages all essential product information, inc
 ### User
 
 The **User** package handles user management, including roles, permissions, and profiles for administrators, ensuring secure access and personalized experiences within the platform.
+
+### Webhook
+
+The **Webhook** package manages product webhook configurations, including enabling or disabling webhook and handling product webhooks triggered by any product changes.

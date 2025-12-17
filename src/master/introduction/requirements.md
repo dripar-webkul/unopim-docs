@@ -32,7 +32,10 @@ Ensure the following extensions are installed and enabled. You can check using t
 
 - **php-pdo extension**: The **`PDO`** extension is necessary for database interactions, providing a consistent interface for working with different databases.
 
-- **php-pdo_mysql extension**: This extension is required specifically for connecting to MySQL databases through PDO in UnoPim.
+- **php-pdo_mysql extension**: Required when using a MySQL database. Enables PDO connections to MySQL in UnoPim.
+
+- **php-pdo_pgsql extension**: Required when using a PostgreSQL database. Enables PDO connections to PostgreSQL in UnoPim.
+
 
 - **php-tokenizer extension**: The **`tokenizer`** extension is needed for working with code parsing and analyzing tokens in the application.
 
@@ -44,7 +47,6 @@ Ensure the following extensions are installed and enabled. You can check using t
 
 1. **Locate the `php.ini` file**:
    - This file is typically located in your PHP installation directory (e.g., `C:\php\php.ini` or `C:\xampp\php\php.ini`).
-
 2. **Enable the extensions**:
    - Open the `php.ini` file in a text editor and find the extensions listed below.
    - Uncomment the lines by removing the `;` at the beginning. If the extension is not listed, you'll need to download the corresponding `.dll` file.
@@ -57,7 +59,8 @@ Ensure the following extensions are installed and enabled. You can check using t
    extension=mbstring
    extension=openssl
    extension=pdo
-   extension=pdo_mysql
+   extension=pdo_mysql       ; Enable this if using MySQL
+   extension=pdo_pgsql       ; Enable this if using PostgreSQL
    extension=tokenizer
    extension=zip
    ```
@@ -67,30 +70,72 @@ Ensure the following extensions are installed and enabled. You can check using t
 
 4. **Restart your web server**:
    - After saving the `php.ini` file, restart Apache or NGINX to apply the changes.
-
 ### On Linux
 
-1. **Install extensions via the package manager**:
-   - Use the following commands based on your Linux distribution to install the required extensions.
+1. **Install common PHP extensions via the package manager**:
+
+   * Use the following commands based on your Linux distribution to install the required extensions.
 
    **For Ubuntu/Debian:**
 
    ```bash
    sudo apt update
-   sudo apt install php-curl php-fileinfo php-gd php-intl php-mbstring php-openssl php-pdo php-pdo-mysql php-tokenizer php-zip
+   sudo apt install php-curl php-fileinfo php-gd php-intl php-mbstring php-openssl php-pdo php-tokenizer php-zip
    ```
 
    **For CentOS/RHEL:**
 
    ```bash
-   sudo yum install php-curl php-fileinfo php-gd php-intl php-mbstring php-openssl php-pdo php-pdo_mysql php-tokenizer php-zip
+   sudo yum install php-curl php-fileinfo php-gd php-intl php-mbstring php-openssl php-pdo php-tokenizer php-zip
    ```
 
    **For Fedora:**
 
    ```bash
-   sudo dnf install php-curl php-fileinfo php-gd php-intl php-mbstring php-openssl php-pdo php-pdo_mysql php-tokenizer php-zip
+   sudo dnf install php-curl php-fileinfo php-gd php-intl php-mbstring php-openssl php-pdo php-tokenizer php-zip
    ```
+
+2. **Install database-specific PHP extension**:
+
+   * **For MySQL:**
+
+     **Ubuntu/Debian:**
+
+     ```bash
+     sudo apt install php-pdo-mysql
+     ```
+
+     **CentOS/RHEL:**
+
+     ```bash
+     sudo yum install php-pdo_mysql
+     ```
+
+     **Fedora:**
+
+     ```bash
+     sudo dnf install php-pdo_mysql
+     ```
+
+   * **For PostgreSQL:**
+
+     **Ubuntu/Debian:**
+
+     ```bash
+     sudo apt install php-pdo-pgsql
+     ```
+
+     **CentOS/RHEL:**
+
+     ```bash
+     sudo yum install php-pdo_pgsql
+     ```
+
+     **Fedora:**
+
+     ```bash
+     sudo dnf install php-pdo_pgsql
+     ```
 
 2. **Restart the web server**:
    - Once the extensions are installed, restart your Apache or NGINX server.
@@ -146,7 +191,8 @@ Ensure the following extensions are installed and enabled. You can check using t
    extension=mbstring
    extension=openssl
    extension=pdo
-   extension=pdo_mysql
+   extension=pdo_mysql       ; Enable this if using MySQL
+   extension=pdo_pgsql       ; Enable this if using PostgreSQL
    extension=tokenizer
    extension=zip
    ```
@@ -184,5 +230,7 @@ UnoPim supports the following database servers:
 - **MySQL**: Version 8.0.32 or higher is recommended for optimal performance and compatibility.
 
 - **MariaDB**: Version 10.3 or higher is recommended for optimal performance and compatibility.
+
+- **PostgreSQL**: Version 14.x or higher is recommended for optimal performance and compatibility
 
 - **Database Collation**: The recommended collation for the database is **`utf8mb4_unicode_ci`**, which ensures proper handling of Unicode characters and multilingual support.

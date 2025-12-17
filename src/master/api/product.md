@@ -24,11 +24,12 @@ Use the [Common Headers](#common-headers).
 
 ### Query Parameters
 
-| Name      | Info                                            | Type   | Default |
-|-----------|-------------------------------------------------|--------|---------|
-| `limit`   | The number of products to retrieve per request  | Number | `10`    |
-| `page`    | Page number to retrieve                         | Number | `1`     |
-| `filters` | Criteria to filter the records returned         | JSON   | N/A     |
+| Name                | Info                                            | Type    | Default |
+|---------------------|-------------------------------------------------|---------|---------|
+| `limit`             | The number of products to retrieve per request  | Number  | `10`    |
+| `page`              | Page number to retrieve                         | Number  | `1`     |
+| `filters`           | Criteria to filter the records returned         | JSON    | N/A     |
+| `with_completeness` | Returns completeness scores for the product     | Boolean | false   |
 
 ### Usage Examples
 
@@ -42,6 +43,12 @@ Use the [Common Headers](#common-headers).
   Fetch products from page 1.
   ```http
   GET {{url}}/api/v1/rest/products?page=1
+  ```
+
+- **With Completeness:**
+  Fetch completeness scores for the product.
+  ```http
+  GET {{url}}/api/v1/rest/products?with_completeness=true
   ```
 
 - **Filters:**
@@ -144,7 +151,24 @@ The response will return a list of products in JSON format:
             }
           }
         }
-      }
+      },
+      "completeness": [
+        {
+          "channel": "default",
+          "locale": "en_AU",
+          "score": 100
+        },
+        {
+          "channel": "default",
+          "locale": "fr_FR",
+          "score": 0
+        },
+        {
+          "channel": "ecommerce",
+          "locale": "de_DE",
+          "score": 0
+        },
+      ]
     },
     {
       "sku": "100PS",
@@ -182,7 +206,9 @@ The response will return a list of products in JSON format:
             }
           }
         }
-      }
+      },
+      // When there is no completeness setting for this family and product completeness is not calculated blank array is returned
+      "completeness": []
     }
   ],
   "current_page": 1,
@@ -218,6 +244,18 @@ Example:
 ```
 GET {{url}}/api/v1/rest/products/100PS3333
 ```
+
+### Query Parameters
+
+| Name                | Info                                        | Type    | Default |
+|---------------------|---------------------------------------------|---------|---------|
+| `with_completeness` | Returns completeness scores for the product | Boolean | false   |
+
+Example:
+```
+GET {{url}}/api/v1/rest/products/100PS3333?with_completeness=true
+```
+
 
 ### Response
 
@@ -260,7 +298,19 @@ GET {{url}}/api/v1/rest/products/100PS3333
         }
       }
     }
-  }
+  },
+  "completeness": [
+    {
+      "channel": "default",
+      "locale": "en_AU",
+      "score": 50
+    },
+    {
+      "channel": "default",
+      "locale": "fr_FR",
+      "score": 80
+    },
+  ]
 }
 ```
 :::

@@ -4,9 +4,9 @@
 
 Use the following command structure to create a new user in UnoPIM:
 
-**`
+```shell
 php artisan unopim:user:create --name="username" --email="useremail" --password="userpassword" --ui_locale="locale_code" --timezone="timezone" --admin
-`**
+```
 
 ## Command Parameters Explained
 
