@@ -1,5 +1,6 @@
-# Installation
+# Installation with PostgreSql
 
+Before beginning, make sure all the requirements are clearly met according to the [requirements doc](requirements) for PostgreSql and you have [PostgreSql](https://www.postgresql.org/download/) installed.
 
 ## Install Using Composer
 
@@ -29,6 +30,10 @@ To install UnoPim using Composer, use the following steps:
     During the installation process, if the **`.env`** file doesn't exist, the installer will prompt you to provide the necessary information.
     :::
 
+    ::: info Default Port for PostgreSql
+    The default port for PostgreSQL is 5432. If you have configured a different port during installation, make sure to update it accordingly in env or when prompted for database port.
+    :::
+
     - Follow the prompts during the installation process to provide the following details:
 
     ```
@@ -53,188 +58,6 @@ To install UnoPim using Composer, use the following steps:
     - Enter the Email address of the Admin User :
     - Configure the Password for admin user :
     ```
-
-## Install Using Docker
-
-###  Prerequisites
-
-Make sure the following are installed on your system:
-
-* **Docker** (latest version)
-* **Docker Compose** (for Method 2)
-
-Verify installation:
-
-```bash
-docker --version
-docker-compose --version
-```
-
-
-### Method 1: Using Docker Hub (Quick Setup - Recommended)
-
-This is the **fastest way** to get UnoPim running.
-
-#### Step 1: Pull UnoPim Docker Image
-
-```bash
-docker pull webkul/unopim:v1.0.0
-```
-
-#### Step 2: Run the Container
-
-```bash
-docker run -it -d --name unopim_container -p 80:80 webkul/unopim:v1.0.0
-```
-
-If port `80` is already in use, you can map to another port (e.g. `8082`):
-
-```bash
-# Stop the container if it is already running
-docker stop unopim_container
-
-# Remove the container so you can recreate it cleanly
-docker rm unopim_container
-
-# Run a new container on port 8082 instead of 80
-docker run -it -d --name unopim_container -p 8082:80 webkul/unopim:v1.0.0
-```
-
-
-Then access UnoPim at:
-**`http://localhost:8082`**
-
-
-#### Step 3: Access UnoPim
-
-Open your browser and visit:
- **`http://localhost`**
-
-**Default Admin Credentials**
-(for UnoPim v0.3.2 and newer):
-
-| Version Range    | Username                                          | Password     |
-| ---------------- | ------------------------------------------------- | ------------ |
-| v0.3.2 and above | `admin@example.com`                               | admin123     |
-| v0.3.0 – v0.3.1  | `admin@example.com`                               | admin\@123   |
-| v0.2.x and below | `johndoe@example.com`                             | JohnDoe\@123 |
-
----
-
-#### Database Connection (Optional)
-
-| Key           | Value       |
-| ------------- | ----------- |
-| Database Name | `unopim_db` |
-| Username      | `root`      |
-| Password      | `root`      |
-
----
-
-###  Method 2: Using Docker Compose (For Customization)
-
-This method is ideal if you want **more control** over your UnoPim environment (custom ports, volumes, etc.).
-
-#### Step 1: Clone Repository
-
-Clone the official UnoPim repository:
-
-**HTTPS:**
-
-```bash
-git clone https://github.com/unopim/unopim.git
-```
-
-**SSH:**
-
-```bash
-git clone git@github.com:unopim/unopim.git
-```
-
-#### Step 2: Enter the Project Directory
-
-```bash
-cd unopim
-```
-
-
-#### Step 3: Configure `.env` (before starting containers)
-
-Create a `.env` file by copying the provided example:
-
-```bash
-cp .env.example .env
-```
-
-Then, open `.env` in your editor and update the database configuration for Docker:
-
-```dotenv
-DB_CONNECTION=mysql
-DB_HOST=unopim-mysql
-DB_PORT=3306
-DB_DATABASE=unopim
-DB_USERNAME=root
-DB_PASSWORD=password
-DB_PREFIX=
-```
-
-> 💡 These values match the services defined in `docker-compose.yml`.
-> You can adjust them if you change container names, ports, or credentials.
-
-Once you’ve saved the file, proceed to **Step 4** to start the containers.
-
-#### Step 4: Start Docker Containers
-
-```bash
-docker-compose up -d
-```
-
-This will pull the required images, build containers, and set up the environment.
-
----
-
-#### Step 5: Access Services
-
-| Service               | URL                                            |
-| --------------------- | ---------------------------------------------- |
-| UnoPim App            | `http://localhost:8000`                        |
-| MySQL                 | localhost:3306                                 |
-
-Verify running containers:
-
-```bash
-docker ps
-```
-
----
-
-### Managing Services
-
-Stop containers:
-
-```bash
-docker-compose down
-```
-
-Restart containers:
-
-```bash
-docker-compose up -d
-```
-
-Rebuild containers (if configuration changes):
-
-```bash
-docker-compose up --build -d
-```
-
-### 💡 Notes & Tips
-
-* If MySQL is already running locally, change the MySQL container port in `docker-compose.yml` and `.env` file.
-* For production, you can configure **persistent volumes** for MySQL data.
-* Always restart containers after making `.env` or `docker-compose.yml` changes.
-
-
 ## Install Using GUI Installer
 
 To install UnoPim using our GUI installer, you can follow any of the following methods:
@@ -315,10 +138,10 @@ Follow these steps to install UnoPim on macOS:
    brew install composer
    ```
 
-5. **Install MySQL**:
-   To install MySQL, run the following command:
+5. **Install PostgreSql**:
+   To install PostgreSql, run the following command:
    ```sh
-   brew install mysql
+   brew install postgresql@16
    ```
 
 ### Installation Steps
@@ -343,9 +166,9 @@ Follow these steps to install UnoPim on macOS:
    - Update the following configurations in `.env`:
      ```
      APP_URL=http://localhost:8000
-     DB_CONNECTION=mysql
+     DB_CONNECTION=pgsql
      DB_HOST=127.0.0.1
-     DB_PORT=3306
+     DB_PORT=5432
      DB_DATABASE=unopim
      DB_USERNAME=root
      DB_PASSWORD=
@@ -368,71 +191,9 @@ For a more production-like environment on macOS, you can use tools like Laravel 
 :::
 
 ::: warning Note
-- Make sure your PHP version is 8.1 or higher and all required PHP extensions are installed.
-- Make sure your Composer version is 2.0 or higher and mysql is installed.
+- Make sure your PHP version is 8.1 or higher and all required PHP extensions are installed including the pdo_pgsql required for postrgresql.
+- Make sure your Composer version is 2.0 or higher and postgresql is installed.
 :::
-
-## Install Using Amazon Cloud AMI
-
-Follow these steps to install UnoPim on Amazon Web Services (AWS) using an Amazon Machine Image (AMI):
-
-### Installation Steps
-
-**Step 1: Launch the EC2 Instance**
-
-- [Launch an EC2 instance from the Unopim AMI via AWS Marketplace.](https://aws.amazon.com/marketplace/pp/prodview-fdyosdv7k3cgw)
-- Wait until the instance status is “running”.
-
-**Step 2: Access Your EC2 Instance**
-
-- Set your PEM file permission:
-    ```sh
-    chmod 400 your-key-file.pem
-    ```
-- Connect to your instance:
-    ```sh
-    ssh -i your-key-file.pem ubuntu@your-instance-ip
-    ```
-    Replace `your-key-file.pem` and `your-instance-ip` with your actual key and public IP.
-
-**Step 3: Run SSL Script**
-
-- Make sure your domain’s A record points to your EC2 Elastic IP.
-- (If using Cloudflare or a similar proxy, disable proxy before running the script.)
-- Run the SSL configuration:
-    ```sh
-    sudo bash /root/ssl_configuration.sh
-    ```
-    This sets up Let's Encrypt SSL and configures Apache for HTTPS.
-
-**Step 4: Complete Unopim Installation Through the Web Interface**
-
-- Visit `https://yourdomain.com/` in your browser.
-- Click **“Continue”** on the setup screen.
-- Follow the on-screen steps:
-    - **System Requirements:** Review and continue.
-    - **Database Setup:** Use credentials found on your server:
-        ```sh
-        cat /var/www/html/unopim/mysql_password.txt
-        ```
-    - **Start Installation:** Click the button to install Unopim.
-    - **Domain URL:** Enter your domain (e.g., `https://yourdomain.com`).
-    - **Set Defaults:** Timezone, locale, currency, and allowed options.
-    - **Admin Setup:** Create admin credentials and set timezone/locale.
-
-- After setup, log in to the Unopim Admin Panel.
-
-**Security Step:**
-Delete the credentials file after setup:
-```sh
-sudo rm /var/www/html/unopim/mysql_password.txt
-```
-
-
-### Cloud Installation via Amazon AMI
-
-You can quickly launch UnoPim on the cloud using our official Amazon Machine Image (AMI): [Launch on Cloud](https://aws.amazon.com/marketplace/pp/prodview-fdyosdv7k3cgw)
-
 
 ## Start Using UnoPim
 
