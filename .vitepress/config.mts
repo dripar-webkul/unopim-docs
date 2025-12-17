@@ -4,6 +4,7 @@ import { defineConfig } from 'vitepress'
 import v01 from './version-configs/0.1'
 import v02 from './version-configs/0.2'
 import v03 from './version-configs/0.3'
+import v1 from './version-configs/1.0.x'
 import getMasterSidebar from './version-configs/master'
 
 
@@ -58,6 +59,7 @@ export default defineConfig({
 
     sidebar: {
       '/master/': getMasterSidebar('master'),
+      '/1.0.x/': v1,
       '/0.2/': v02,
       '/0.3/': v03,
       '/0.1/': v01,

@@ -16,6 +16,7 @@ import { computed } from 'vue'
 
 const versions = [
   { label: 'Master', value: 'master' },
+  { label: '1.0.x', value: '1.0.x' },
   { label: '0.3', value: '0.3' },
   { label: '0.2', value: '0.2' },
   { label: '0.1', value: '0.1' }
@@ -25,12 +26,12 @@ const route = useRoute()
 const router = useRouter()
 
 const currentVersion = computed(() => {
-  const match = route.path.match(/^\/(master|0\.1|0\.2|0\.3)(\/.*)?$/)
+  const match = route.path.match(/^\/(master|0\.1|0\.2|0\.3|1\.0\.x)(\/.*)?$/)
   return match ? match[1] : 'master'
 })
 
 const restPath = computed(() => {
-  const match = route.path.match(/^\/(master|0\.1|0\.2|0\.3)(\/.*)?$/)
+  const match = route.path.match(/^\/(master|0\.1|0\.2|0\.3|1\.0\.x)(\/.*)?$/)
   return match && match[2] ? match[2] : '/'
 })
 
